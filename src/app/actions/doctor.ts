@@ -8,6 +8,10 @@ import { authOptions } from "@/lib/auth";
 export async function getAppointments() {
   const session = await getServerSession(authOptions);
   
+  if (!session?.user) {
+    throw new Error("Oturum bulunamadı veya yetkisiz erişim.");
+  }
+
   const userRole = (session.user as any).role;
   const userId = (session.user as any).id;
 
@@ -38,8 +42,8 @@ export async function getAppointments() {
 export async function updateAppointmentStatus(id: number, status: string) {
   const session = await getServerSession(authOptions);
   
-  if (!session || (session.user as any).role !== 'DOCTOR') {
-    throw new Error("Yetkisiz erişim. Sadece hekimler durumu güncelleyebilir.");
+  if (!session?.user || (session.user as any).role !== 'DOCTOR' && (session.user as any).role !== 'ADMIN') {
+    throw new Error("Yetkisiz erişim. Sadece hekimler veya yöneticiler durumu güncelleyebilir.");
   }
 
   const userRole = (session.user as any).role;
@@ -59,8 +63,8 @@ export async function updateAppointmentStatus(id: number, status: string) {
 export async function deleteAppointment(id: number) {
   const session = await getServerSession(authOptions);
   
-  if (!session || (session.user as any).role !== 'DOCTOR') {
-    throw new Error("Yetkisiz erişim. Sadece hekimler randevuyu silebilir.");
+  if (!session?.user || (session.user as any).role !== 'DOCTOR' && (session.user as any).role !== 'ADMIN') {
+    throw new Error("Yetkisiz erişim. Sadece hekimler veya yöneticiler randevuyu silebilir.");
   }
 
   return await prisma.appointment.delete({
