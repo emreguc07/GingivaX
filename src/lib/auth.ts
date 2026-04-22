@@ -62,5 +62,4 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-  useSecureCookies: false, // Mobil Safari'nin HTTP üzerinden çerezleri kabul etmesi için şart
 };
