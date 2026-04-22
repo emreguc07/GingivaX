@@ -126,18 +126,18 @@ const DoctorDashboard = () => {
                 ) : (
                   appointments.map(app => (
                     <tr key={app.id}>
-                      <td><strong>{app.name}</strong></td>
-                      <td>{app.service}</td>
-                      {isAdmin && <td><span className="doc-name-tag">{app.doctor?.name || 'Atanmamış'}</span></td>}
-                      <td>{app.date}</td>
-                      <td>{app.time}</td>
-                      <td>
+                      <td data-label="Hasta Adı"><strong>{app.name}</strong></td>
+                      <td data-label="Hizmet">{app.service}</td>
+                      {isAdmin && <td data-label="Hekim"><span className="doc-name-tag">{app.doctor?.name || 'Atanmamış'}</span></td>}
+                      <td data-label="Tarih">{app.date}</td>
+                      <td data-label="Saat">{app.time}</td>
+                      <td data-label="Durum">
                         <span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>
                           {app.status}
                         </span>
                       </td>
                       {!isAdmin && (
-                        <td>
+                        <td data-label="İşlemler">
                           <div className="action-btns">
                             <button 
                               className="btn-sm success"
@@ -260,8 +260,63 @@ const DoctorDashboard = () => {
         .btn-sm.delete { background: #fee2e2; color: #dc2626; }
 
         @media (max-width: 768px) {
-          .appointments-table { font-size: 0.8rem; }
-          .action-btns { flex-direction: column; }
+          .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+          }
+          
+          .appointments-table thead {
+            display: none;
+          }
+
+          .appointments-table, 
+          .appointments-table tbody, 
+          .appointments-table tr, 
+          .appointments-table td {
+            display: block;
+            width: 100%;
+          }
+
+          .appointments-table tr {
+            margin-bottom: 1.5rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 1rem;
+            border: 1px solid var(--border);
+          }
+
+          .appointments-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+            padding: 0.8rem 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+          }
+
+          .appointments-table td:last-child {
+            border-bottom: none;
+          }
+
+          .appointments-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: left;
+          }
+
+          .action-btns {
+            width: 100%;
+            justify-content: flex-end;
+          }
+          
+          .btn-sm {
+            padding: 0.6rem 1rem;
+            flex: 1;
+          }
         }
       `}</style>
     </div>
