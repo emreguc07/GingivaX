@@ -58,7 +58,7 @@ const Navbar = () => {
                 {session ? (
                   <div className="user-nav">
                     <Link href="/profile" className="user-profile-link" onClick={closeMenu}>
-                      <span className="user-name">{session.user.name}</span>
+                      <span className="user-name">{session?.user?.name}</span>
                     </Link>
                     <button 
                       className="btn-outline btn-sm" 
