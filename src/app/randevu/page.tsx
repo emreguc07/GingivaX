@@ -9,7 +9,7 @@ import './randevu.css';
 
 interface Doctor {
   id: string;
-  name: string;
+  name: string | null;
 }
 
 export default function BookingPage() {
