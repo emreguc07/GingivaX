@@ -23,7 +23,7 @@ const DoctorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'appointments' | 'messages'>('appointments');
 
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
   useEffect(() => {
     async function fetchData() {

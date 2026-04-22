@@ -45,10 +45,10 @@ const Navbar = () => {
               <Link href="/hekimlerimiz" onClick={closeMenu}>Hekimlerimiz</Link>
               <Link href="/#hakkimizda" onClick={closeMenu}>Hakkımızda</Link>
               
-              {session?.user?.role === 'ADMIN' && (
+              {(session?.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin" className="doctor-link admin-btn" style={{borderColor: 'gold', color: 'gold'}} onClick={closeMenu}>Admin Panel</Link>
               )}
-              {(session?.user?.role === 'DOCTOR' || session?.user?.role === 'ADMIN') && (
+              {((session?.user as any)?.role === 'DOCTOR' || (session?.user as any)?.role === 'ADMIN') && (
                 <Link href="/doctor" className="doctor-link flex items-center gap-1" onClick={closeMenu}>
                   Doktor Paneli <MessageBadge />
                 </Link>
