@@ -9,7 +9,7 @@ export async function createAppointment(formData: {
   service: string;
   date: string;
   time: string;
-  doctorId: string;
+  doctorId?: string;
   name?: string;
 }) {
   try {
