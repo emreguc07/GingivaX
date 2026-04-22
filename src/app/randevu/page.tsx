@@ -28,8 +28,9 @@ export default function BookingPage() {
 
   // Auto-fill name when session is available
   useEffect(() => {
-    if (session?.user?.name) {
-      setFormData(prev => ({ ...prev, name: session.user.name as string }));
+    const userName = session?.user?.name;
+    if (userName) {
+      setFormData(prev => ({ ...prev, name: userName }));
     }
   }, [session]);
 
