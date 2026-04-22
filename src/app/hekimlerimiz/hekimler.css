@@ -1,0 +1,191 @@
+/* src/app/hekimlerimiz/hekimler.css */
+
+.doctors-page-container {
+  padding: 4rem 0 8rem;
+  background: radial-gradient(circle at top right, rgba(0, 206, 209, 0.03), transparent 50%),
+              radial-gradient(circle at bottom left, rgba(0, 206, 209, 0.03), transparent 50%);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-header h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.doctors-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.doctor-card {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  overflow: hidden;
+  border-radius: 32px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.doctor-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary);
+}
+
+.doctor-image-wrapper {
+  position: relative;
+  height: 100%;
+  min-height: 450px;
+  overflow: hidden;
+}
+
+.doctor-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.doctor-card:hover .doctor-img {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1));
+  z-index: 1;
+}
+
+.doctor-info {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.specialty-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 206, 209, 0.1);
+  color: var(--primary);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  width: fit-content;
+}
+
+.doctor-info h2 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+.doctor-bio {
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+}
+
+.doctor-extra {
+  margin-bottom: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.edu-label {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--secondary);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.doctor-social {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-social {
+  padding: 0.6rem 1.2rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-social:hover {
+  background: var(--secondary);
+  color: white;
+  border-color: var(--secondary);
+}
+
+.join-team {
+  margin-top: 6rem;
+  padding: 4rem;
+  text-align: center;
+  border-radius: 40px;
+}
+
+.join-team h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading-container {
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@media (max-width: 900px) {
+  .doctor-card {
+    grid-template-columns: 1fr;
+  }
+  .doctor-image-wrapper {
+    min-height: 350px;
+  }
+  .doctor-info {
+    padding: 2rem;
+  }
+}
+@media (max-width: 480px) {
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-header h1 {
+    font-size: 2.5rem;
+  }
+}

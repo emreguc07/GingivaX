@@ -1,0 +1,64 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  role          String    @default("USER") // ADMIN, DOCTOR, USER
+  image         String?
+  
+  // Doctor Profile Fields (Dynamic)
+  specialty     String?
+  bio           String?
+  education     String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  appointments        Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
+  sentMessages        Message[]     @relation("SentMessages")
+  receivedMessages    Message[]     @relation("ReceivedMessages")
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  service   String
+  date      String
+  time      String
+  status    String   @default("Bekliyor") // Bekliyor, Onaylandı, İptal Edildi
+  name      String?  
+  createdAt DateTime @default(now())
+  
+  // Patient Relation
+  user      User?    @relation("PatientAppointments", fields: [userId], references: [id])
+  userId    String?
+  
+  // Doctor Relation
+  doctor    User?    @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  doctorId  String?
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  createdAt   DateTime @default(now())
+  isRead      Boolean  @default(false)
+  
+  // Relations
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId    String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId  String
+}
