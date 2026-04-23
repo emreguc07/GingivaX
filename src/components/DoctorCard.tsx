@@ -12,7 +12,6 @@ interface Doctor {
   specialty: string | null;
   bio: string | null;
   education: string | null;
-  education: string | null;
   doctorReviews?: { rating: number, comment: string, patient: { name: string | null } }[];
 }
 
