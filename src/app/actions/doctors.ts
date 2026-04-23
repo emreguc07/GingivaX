@@ -15,7 +15,11 @@ export async function getDoctorsList() {
         education: true,
         image: true,
         doctorReviews: {
-          select: { rating: true, comment: true }
+          select: { 
+            rating: true, 
+            comment: true,
+            patient: { select: { name: true } }
+          }
         }
       }
     });
