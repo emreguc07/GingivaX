@@ -43,6 +43,7 @@ const DoctorDashboard = () => {
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [noteContent, setNoteContent] = useState('');
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
@@ -300,9 +301,9 @@ const DoctorDashboard = () => {
                                       src={(app as any).imageUrl} 
                                       alt="Röntgen" 
                                       style={{width: '60px', height: '60px', borderRadius: '8px', cursor: 'pointer', border: '1px solid var(--border)'}} 
-                                      onClick={() => window.open((app as any).imageUrl, '_blank')}
+                                      onClick={() => setSelectedImageUrl((app as any).imageUrl)}
                                     />
-                                    <span style={{fontSize: '0.75rem', color: 'var(--primary)', marginLeft: '0.5rem', cursor: 'pointer'}} onClick={() => window.open((app as any).imageUrl, '_blank')}>🔍 Büyüt</span>
+                                    <span style={{fontSize: '0.75rem', color: 'var(--primary)', marginLeft: '0.5rem', cursor: 'pointer'}} onClick={() => setSelectedImageUrl((app as any).imageUrl)}>🔍 Büyüt</span>
                                   </div>
                                 )}
                               </div>
@@ -365,6 +366,16 @@ const DoctorDashboard = () => {
 
         {activeTab === 'messages' && <DoctorChatList />}
       </div>
+
+      {/* Image Modal */}
+      {selectedImageUrl && (
+        <div className="image-modal-overlay" onClick={() => setSelectedImageUrl(null)}>
+          <div className="image-modal-container fade-in" onClick={e => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setSelectedImageUrl(null)}>×</button>
+            <img src={selectedImageUrl} alt="Büyük Görünüm" className="modal-image" />
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .dashboard-tabs {
@@ -593,6 +604,56 @@ const DoctorDashboard = () => {
         .btn-add-note { font-size: 0.85rem; color: var(--primary); background: none; border: 1px dashed var(--primary); padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; }
         .btn-add-note:hover { background: var(--accent-light); }
         .note-hint { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+
+        /* Image Modal Styles */
+        .image-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.85);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 2rem;
+        }
+        .image-modal-container {
+          position: relative;
+          max-width: 90vw;
+          max-height: 90vh;
+        }
+        .modal-image {
+          max-width: 100%;
+          max-height: 90vh;
+          border-radius: 12px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+          border: 4px solid white;
+        }
+        .modal-close-btn {
+          position: absolute;
+          top: -40px;
+          right: -40px;
+          background: white;
+          border: none;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          font-size: 24px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          transition: 0.3s;
+        }
+        .modal-close-btn:hover { transform: scale(1.1); background: var(--primary); color: white; }
+
+        @media (max-width: 768px) {
+          .modal-close-btn { top: -50px; right: 0; }
+        }
       `}</style>
     </div>
   );
