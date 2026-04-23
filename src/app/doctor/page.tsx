@@ -56,14 +56,19 @@ const DoctorDashboard = () => {
           !isAdmin ? getPatientsByDoctor() : Promise.resolve([])
         ]);
         setAppointments(appData as any);
-        setPatients(patientData as any);
+        if (!isAdmin) setPatients(patientData as any);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
+    
     fetchData();
+
+    // Real-time Update: Poll every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, [isAdmin]);
 
   const updateStatus = async (id: number, newStatus: string) => {
@@ -114,7 +119,13 @@ const DoctorDashboard = () => {
       <header className="dashboard-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <div>
-            <h1>{isAdmin ? 'Klinik Özeti (Yönetici)' : 'Doktor Paneli'}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              <h1>{isAdmin ? 'Klinik Özeti (Yönetici)' : 'Doktor Paneli'}</h1>
+              <div className="live-indicator">
+                <span className="live-dot"></span>
+                CANLI
+              </div>
+            </div>
             <p>{isAdmin ? 'Tüm doktorların aktif randevuları.' : 'Bugünkü randevularınız ve klinik özeti.'}</p>
           </div>
           {!isAdmin && (
@@ -656,6 +667,32 @@ const DoctorDashboard = () => {
           transition: 0.3s;
         }
         .modal-close-btn:hover { transform: scale(1.1); background: var(--primary); color: white; }
+        
+        .live-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+          padding: 0.3rem 0.6rem;
+          border-radius: 50px;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 1px;
+        }
+        .live-dot {
+          width: 8px;
+          height: 8px;
+          background: #10b981;
+          border-radius: 50%;
+          display: inline-block;
+          animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+          70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
 
         @media (max-width: 768px) {
           .modal-close-btn { top: -50px; right: 0; }
