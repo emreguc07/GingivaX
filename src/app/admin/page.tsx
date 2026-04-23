@@ -55,6 +55,7 @@ export default function AdminDashboard() {
           </div>
           <div className="admin-nav">
             <Link href="/admin" className="active">Dashboard</Link>
+            <Link href="/admin/users">Kullanıcılar</Link>
             <Link href="/admin/doctors">Hekimler</Link>
             <Link href="/admin/reviews">Yorumlar</Link>
           </div>
@@ -168,6 +169,7 @@ export default function AdminDashboard() {
           <div className="quick-actions-sidebar glass fade-in" style={{padding: '2.5rem', borderRadius: '32px'}}>
             <h2>Hızlı İşlemler</h2>
             <div className="admin-nav" style={{flexDirection: 'column', marginTop: '2rem', gap: '0.8rem'}}>
+              <Link href="/admin/users" style={{textAlign: 'center'}}>👥 Kullanıcıları Yönet</Link>
               <Link href="/admin/doctors" style={{textAlign: 'center'}}>🆕 Yeni Hekim Ekle</Link>
               <Link href="/admin/reviews" style={{textAlign: 'center'}}>⭐ Yorumları Denetle</Link>
               <Link href="/doctor" style={{textAlign: 'center'}}>🌎 Randevuları Yönet</Link>
