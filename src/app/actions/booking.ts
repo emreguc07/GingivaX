@@ -13,6 +13,7 @@ export async function createAppointment(formData: {
   time: string;
   doctorId?: string;
   name?: string;
+  imageUrl?: string;
 }) {
   try {
     const session = await getServerSession(authOptions);
