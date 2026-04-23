@@ -238,7 +238,20 @@ export default function BookingPage() {
                              isOutsideHours = t < start || t >= end;
                           }
 
-                          const disabled = isBooked || isOutsideHours;
+                          // Past time validation for today
+                          let isPast = false;
+                          const isToday = formData.date === new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD
+                          if (isToday) {
+                            const now = new Date();
+                            const currentHour = now.getHours();
+                            const currentMinute = now.getMinutes();
+                            const [slotHour, slotMinute] = t.split(':').map(Number);
+                            if (slotHour < currentHour || (slotHour === currentHour && slotMinute <= currentMinute)) {
+                              isPast = true;
+                            }
+                          }
+
+                          const disabled = isBooked || isOutsideHours || isPast;
 
                           return (
                             <button 
@@ -247,7 +260,7 @@ export default function BookingPage() {
                               disabled={disabled}
                               onClick={() => setFormData({...formData, time: t})}
                             >
-                              {t} {isBooked ? '(Dolu)' : isOutsideHours ? '(Mola)' : ''}
+                              {t} {isBooked ? '(Dolu)' : isOutsideHours ? '(Mola)' : isPast ? '(Geçti)' : ''}
                             </button>
                           );
                         })}
