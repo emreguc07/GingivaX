@@ -219,7 +219,9 @@ export default function RegisterPage() {
                 className="input-modern"
                 value={formData.name}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  // Sadece harf ve boşluk kabul et (Rakam ve sembolleri temizle)
+                  const val = e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '');
+                  
                   const formatted = val.split(' ').map(word => 
                     word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1)
                   ).join(' ');
