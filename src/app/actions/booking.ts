@@ -12,6 +12,7 @@ export async function createAppointment(formData: {
   date: string;
   time: string;
   doctorId?: string;
+  doctorName?: string;
   name?: string;
   imageUrl?: string;
 }) {
@@ -57,7 +58,7 @@ export async function createAppointment(formData: {
           date: formData.date,
           time: formData.time,
           service: formData.service,
-          doctor: "Belirlenen Hekim" // Or fetch doctor name if needed
+          doctor: formData.doctorName || "Belirlenmedi"
         }
       });
     }
