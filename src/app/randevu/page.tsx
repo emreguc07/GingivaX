@@ -18,40 +18,22 @@ export default function BookingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [availabilityInfo, setAvailabilityInfo] = useState<{booked: string[], isClosed: boolean, workingHours?: any}>({
+    booked: [],
+    isClosed: false
+  });
   const [formData, setFormData] = useState({
     name: '',
-    service: '',
-    doctorId: '',
-    doctorName: '',
-    date: '',
-    time: ''
+// ... (rest of formData)
   });
 
-
-  // Auto-fill name when session is available
-  useEffect(() => {
-    const userName = session?.user?.name;
-    if (userName) {
-      setFormData(prev => ({ ...prev, name: userName }));
-    }
-  }, [session]);
-
-  useEffect(() => {
-    async function fetchDoctors() {
-      const res = await getDoctorsList();
-      if (res.success) {
-        setDoctors(res.doctors || []);
-      }
-    }
-    fetchDoctors();
-  }, []);
+  // ... (useEffects)
 
   useEffect(() => {
     async function fetchBooked() {
       if (formData.doctorId && formData.date) {
-        const slots = await getBookedSlots(formData.doctorId, formData.date);
-        setBookedSlots(slots);
+        const res = await getBookedSlots(formData.doctorId, formData.date);
+        setAvailabilityInfo(res as any);
       }
     }
     fetchBooked();
@@ -64,137 +46,67 @@ export default function BookingPage() {
     { id: 'ortho', name: 'Ortodonti', icon: '📏' }
   ];
 
-  const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+  const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // @ts-ignore
-    const res = await createAppointment(formData);
-    
-    if (res.success) {
-      setStep(5);
-    } else {
-      alert(res.error);
-    }
-    setLoading(false);
-  };
+// ... (handleSubmit)
 
-  return (
-    <div className="full-booking-page">
-      <div className="container">
-        <div className="booking-layout glass fade-in">
-          <div className="booking-sidebar">
-            <h2>Neden GingivaX?</h2>
-            <ul className="benefits-list">
-              <li>✓ Uzman Hekim Kadrosu</li>
-              <li>✓ Modern Teknoloji</li>
-              <li>✓ Hijyenik Ortam</li>
-              <li>✓ Hasta Odaklı Yaklaşım</li>
-            </ul>
-            <div className="clinic-mini-card">
-              <p>📍 Cumhuriyet Cad. No:123</p>
-              <p>📞 +90 555 123 45 67</p>
-            </div>
-          </div>
-
-          <div className="booking-main">
-            <div className="booking-flow-header">
-              <h1>Randevu Oluştur</h1>
-              <div className="steps-progress">
-                {[1, 2, 3, 4].map(s => (
-                  <div key={s} className={`progress-dot ${step >= s ? 'active' : ''}`}></div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flow-content">
-              {step === 1 && (
-                <div className="step-box fade-in">
-                  <h3>Hizmet Seçiniz</h3>
-                  <div className="services-grid-booking">
-                    {services.map(s => (
-                      <button 
-                         key={s.id}
-                        className={`service-btn ${formData.service === s.name ? 'selected' : ''}`}
-                        onClick={() => {
-                          setFormData({...formData, service: s.name});
-                          setStep(2);
-                        }}
-                      >
-                        <span className="btn-icon">{s.icon}</span>
-                        <span className="btn-label">{s.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="step-box fade-in">
-                  <h3>Hekim Seçiniz</h3>
-                  <p className="step-hint">Randevunuzu hangi hekimimizden almak istersiniz?</p>
-                  <div className="doctors-list-booking">
-                    {doctors.length === 0 ? (
-                      <p>Kayıtlı hekim bulunamadı.</p>
-                    ) : (
-                      doctors.map(doc => (
-                        <button 
-                          key={doc.id}
-                          className={`doctor-option-btn ${formData.doctorId === doc.id ? 'selected' : ''}`}
-                          onClick={() => {
-                            setFormData({...formData, doctorId: doc.id, doctorName: doc.name || ''});
-                            setStep(3);
-                          }}
-                        >
-                          <div className="doc-avatar">{doc.name?.charAt(0)}</div>
-                          <span>{doc.name}</span>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                  <button className="btn-back" onClick={() => setStep(1)}>Geri</button>
-                </div>
-              )}
-
+// ... inside Step 3 (render):
               {step === 3 && (
                 <div className="step-box fade-in">
                   <h3>Zaman Belirleyin</h3>
-                  <div className="datetime-wrapper">
-                    <input 
-                      type="date" 
-                      className="full-date-input"
-                      onChange={(e) => setFormData({...formData, date: e.target.value})}
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                    <div className="full-time-grid">
-                      {timeSlots.map(t => {
-                        const isBooked = bookedSlots.includes(t);
-                        return (
-                          <button 
-                            key={t}
-                            className={`time-chip ${formData.time === t ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
-                            disabled={isBooked}
-                            onClick={() => setFormData({...formData, time: t})}
-                          >
-                            {t} {isBooked && '(Dolu)'}
-                          </button>
-                        );
-                      })}
+                  {availabilityInfo.isClosed ? (
+                    <div className="closed-warning glass">
+                      <p>Hekimimiz bu tarihte hizmet vermemektedir.</p>
+                      <button className="btn-back" onClick={() => setStep(2)}>Başka Hekim Seç</button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="datetime-wrapper">
+                      <input 
+                        type="date" 
+                        className="full-date-input"
+                        onChange={(e) => setFormData({...formData, date: e.target.value})}
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                      <div className="full-time-grid">
+                        {timeSlots.map(t => {
+                          const isBooked = availabilityInfo.booked.includes(t);
+                          
+                          // Check working hours range
+                          let isOutsideHours = false;
+                          if (availabilityInfo.workingHours) {
+                             const { start, end } = availabilityInfo.workingHours;
+                             isOutsideHours = t < start || t >= end;
+                          }
 
-                  <div className="step-actions-row">
-                    <button className="btn-back" onClick={() => setStep(2)}>Geri</button>
-                    <button 
-                      className="btn-next" 
-                      disabled={!formData.date || !formData.time}
-                      onClick={() => setStep(4)}
-                    >Devam Et</button>
-                  </div>
+                          const disabled = isBooked || isOutsideHours;
+
+                          return (
+                            <button 
+                              key={t}
+                              className={`time-chip ${formData.time === t ? 'selected' : ''} ${disabled ? 'booked' : ''}`}
+                              disabled={disabled}
+                              onClick={() => setFormData({...formData, time: t})}
+                            >
+                              {t} {isBooked ? '(Dolu)' : isOutsideHours ? '(Mola)' : ''}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {!availabilityInfo.isClosed && (
+                    <div className="step-actions-row">
+                      <button className="btn-back" onClick={() => setStep(2)}>Geri</button>
+                      <button 
+                        className="btn-next" 
+                        disabled={!formData.date || !formData.time}
+                        onClick={() => setStep(4)}
+                      >Devam Et</button>
+                    </div>
+                  )}
                 </div>
               )}
+
 
               {step === 4 && (
                 <form className="step-box fade-in" onSubmit={handleSubmit}>

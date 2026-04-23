@@ -310,7 +310,24 @@
   margin-top: 3rem;
 }
 
+.closed-warning {
+  padding: 3rem;
+  text-align: center;
+  background: #fff1f2;
+  border: 1px solid #fda4af;
+  border-radius: 20px;
+  margin: 1rem 0;
+}
+
+.closed-warning p {
+  color: #be123c;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
 @media (max-width: 1024px) {
+
   .booking-layout { grid-template-columns: 1fr; }
   .booking-sidebar { display: none; }
 }

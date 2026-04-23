@@ -31,9 +31,33 @@ model User {
   doctorAppointments  Appointment[] @relation("DoctorAppointments")
   sentMessages        Message[]     @relation("SentMessages")
   receivedMessages    Message[]     @relation("ReceivedMessages")
+  workingDays         WorkingDay[]
+  offDates            OffDate[]
+}
+
+model WorkingDay {
+  id        String   @id @default(cuid())
+  dayOfWeek Int      // 0-6 (Sunday-Saturday)
+  startTime String   @default("09:00")
+  endTime   String   @default("18:00")
+  isClosed  Boolean  @default(false)
+  doctor    User     @relation(fields: [doctorId], references: [id])
+  doctorId  String
+
+  @@unique([doctorId, dayOfWeek])
+}
+
+model OffDate {
+  id        String   @id @default(cuid())
+  date      String   // "2026-05-01"
+  doctor    User     @relation(fields: [doctorId], references: [id])
+  doctorId  String
+
+  @@unique([doctorId, date])
 }
 
 model Appointment {
+
   id        Int      @id @default(autoincrement())
   service   String
   date      String
