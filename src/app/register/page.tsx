@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { verifyCode, resendVerificationCode } from '@/app/actions/auth';
 import '../auth.css';
 
 export default function RegisterPage() {
@@ -15,7 +16,53 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pin, setPin] = useState(['', '', '', '', '', '']);
+  const [verifying, setVerifying] = useState(false);
+  const [resendStatus, setResendStatus] = useState('');
   const router = useRouter();
+
+  const handlePinChange = (index: number, value: string) => {
+    if (value.length > 1) return;
+    const newPin = [...pin];
+    newPin[index] = value;
+    setPin(newPin);
+
+    // Auto-focus next
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`pin-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleVerifyPin = async () => {
+    const code = pin.join('');
+    if (code.length < 6) {
+      setError("Lütfen 6 haneli kodu tam girin.");
+      return;
+    }
+
+    setVerifying(true);
+    setError('');
+    
+    const res = await verifyCode(formData.email, code);
+    if (res.error) {
+      setError(res.error);
+      setVerifying(false);
+    } else {
+      router.push('/login?verified=true');
+    }
+  };
+
+  const handleResend = async () => {
+    setResendStatus('Gönderiliyor...');
+    const res = await resendVerificationCode(formData.email);
+    if (res.success) {
+      setResendStatus('Kod tekrar gönderildi.');
+       setTimeout(() => setResendStatus(''), 3000);
+    } else {
+      setResendStatus('Hata oluştu.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,17 +95,82 @@ export default function RegisterPage() {
           ))}
         </div>
         <div className="auth-form-side" style={{ flex: 1 }}>
-          <div className="auth-card-modern fade-in" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📧</div>
-            <h1>E-postanızı Kontrol Edin</h1>
+          <div className="auth-card-modern fade-in" style={{ textAlign: 'center', maxWidth: '500px' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔐</div>
+            <h1>Kodu Girin</h1>
             <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '2rem' }}>
-              Kaydınız başarıyla oluşturuldu! Giriş yapabilmek için <strong>{formData.email}</strong> adresine gönderdiğimiz doğrulama linkine tıklamanız gerekmektedir.
+              <strong>{formData.email}</strong> adresine 6 haneli bir doğrulama kodu gönderdik. Lütfen kodu aşağıya girin.
             </p>
-            <Link href="/login" className="auth-btn-modern" style={{ display: 'inline-block', textDecoration: 'none' }}>
-              Giriş Ekranına Dön
-            </Link>
+
+            {error && <div className="auth-error-modern" style={{ marginBottom: '1.5rem' }}>{error}</div>}
+
+            <div className="pin-input-container">
+              {pin.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`pin-${idx}`}
+                  type="text"
+                  maxLength={1}
+                  className="pin-box"
+                  value={digit}
+                  onChange={(e) => handlePinChange(idx, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Backspace' && !pin[idx] && idx > 0) {
+                      document.getElementById(`pin-${idx - 1}`)?.focus();
+                    }
+                  }}
+                />
+              ))}
+            </div>
+
+            <button 
+              className="auth-btn-modern" 
+              style={{ marginTop: '2rem' }}
+              onClick={handleVerifyPin}
+              disabled={verifying}
+            >
+              {verifying ? 'Doğrulanıyor...' : 'Hesabı Doğrula'}
+            </button>
+
+            <div style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
+              Kod gelmedi mi? {' '}
+              <button 
+                onClick={handleResend}
+                style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                {resendStatus || 'Tekrar Gönder'}
+              </button>
+            </div>
           </div>
         </div>
+        <style jsx>{`
+          .pin-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1rem;
+          }
+          .pin-box {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            color: var(--primary);
+            transition: 0.3s;
+          }
+          .pin-box:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 206, 209, 0.1);
+          }
+          @media (max-width: 480px) {
+            .pin-box { width: 40px; height: 50px; font-size: 1.2rem; }
+          }
+        `}</style>
       </div>
     );
   }

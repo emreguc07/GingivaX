@@ -3,20 +3,20 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function verifyEmail(token: string) {
+export async function verifyCode(email: string, token: string) {
   try {
-    const existingToken = await prisma.verificationToken.findUnique({
-      where: { token }
+    const existingToken = await prisma.verificationToken.findFirst({
+      where: { email, token }
     });
 
     if (!existingToken) {
-      return { error: "Geçersiz doğrulama kodlu." };
+      return { error: "Geçersiz doğrulama kodu." };
     }
 
     const hasExpired = new Date(existingToken.expires) < new Date();
 
     if (hasExpired) {
-      return { error: "Doğrulama kodunun süresi dolmuş." };
+      return { error: "Doğrulama kodunun süresi dolmuş. Lütfen yeni bir kod isteyin." };
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -30,8 +30,7 @@ export async function verifyEmail(token: string) {
     await prisma.user.update({
       where: { id: existingUser.id },
       data: { 
-        emailVerified: new Date(),
-        email: existingToken.email // In case email changed, but here we just verify
+        emailVerified: new Date()
       }
     });
 
@@ -44,3 +43,30 @@ export async function verifyEmail(token: string) {
     return { error: "Bir hata oluştu." };
   }
 }
+
+export async function resendVerificationCode(email: string) {
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return { error: "Kullanıcı bulunamadı." };
+
+    const token = await (await import("@/lib/tokens")).generateVerificationToken(email);
+    const { sendEmail } = await import("@/lib/notifications");
+
+    await sendEmail({
+      to: email,
+      subject: "Yeni Doğrulama Kodunuz - GingivaX",
+      body: "Yeni doğrulama kodunuz aşağıdadır:",
+      details: {
+        date: "Hemen",
+        time: "Doğrulama Kodu",
+        service: token.token,
+        doctor: "GingivaX Güvenlik"
+      }
+    });
+
+    return { success: "Yeni kod e-postanıza gönderildi." };
+  } catch (err) {
+    return { error: "Kod gönderilemedi." };
+  }
+}
+
