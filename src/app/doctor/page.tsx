@@ -92,9 +92,31 @@ const DoctorDashboard = () => {
   return (
     <div className="container dashboard-container fade-in">
       <header className="dashboard-header">
-        <div>
-          <h1>{isAdmin ? 'Klinik Özeti (Yönetici)' : 'Doktor Paneli'}</h1>
-          <p>{isAdmin ? 'Tüm doktorların aktif randevuları.' : 'Bugünkü randevularınız ve klinik özeti.'}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div>
+            <h1>{isAdmin ? 'Klinik Özeti (Yönetici)' : 'Doktor Paneli'}</h1>
+            <p>{isAdmin ? 'Tüm doktorların aktif randevuları.' : 'Bugünkü randevularınız ve klinik özeti.'}</p>
+          </div>
+          {!isAdmin && (
+            <button 
+              className="btn-settings-nav"
+              onClick={() => window.location.href = '/doctor/ayarlar'}
+              style={{
+                padding: '0.8rem 1.2rem',
+                borderRadius: '12px',
+                border: '1px solid var(--border)',
+                background: 'white',
+                cursor: 'pointer',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: '0.3s'
+              }}
+            >
+              ⚙️ Ayarlar
+            </button>
+          )}
         </div>
         <div className="stats-row">
           <div className="stat-card glass">
