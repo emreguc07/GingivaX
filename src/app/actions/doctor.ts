@@ -18,7 +18,7 @@ export async function getAppointments() {
   if (userRole === 'ADMIN') {
     return await prisma.appointment.findMany({
       include: {
-        user: { select: { name: true, email: true } },
+        user: { select: { id: true, name: true, email: true } },
         doctor: { select: { name: true } }
       },
       orderBy: { createdAt: 'desc' }
@@ -30,6 +30,7 @@ export async function getAppointments() {
     include: {
       user: {
         select: {
+          id: true,
           name: true,
           email: true,
         }
@@ -38,6 +39,7 @@ export async function getAppointments() {
     orderBy: { createdAt: 'desc' }
   });
 }
+
 
 export async function updateAppointmentStatus(id: number, status: string) {
   const session = await getServerSession(authOptions);
@@ -71,3 +73,41 @@ export async function deleteAppointment(id: number) {
     where: { id }
   });
 }
+
+export async function getPatientsByDoctor() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user || (session.user as any).role !== 'DOCTOR') {
+    throw new Error("Yetkisiz erişim.");
+  }
+
+  const doctorId = (session.user as any).id;
+
+  const patients = await prisma.user.findMany({
+    where: {
+      appointments: {
+        some: { doctorId: doctorId }
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      appointments: {
+        where: { doctorId: doctorId },
+        select: {
+          id: true,
+          service: true,
+          date: true,
+          time: true,
+          status: true
+        },
+        orderBy: { createdAt: 'desc' }
+      }
+    }
+  });
+
+  return patients;
+}
+
