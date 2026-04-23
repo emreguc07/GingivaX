@@ -280,7 +280,13 @@ const DoctorDashboard = () => {
                             {app.status === 'Onaylandı' && (
                               <button className="btn-sm status-complete" onClick={() => updateStatus(app.id, 'Tamamlandı')}>Tamamla</button>
                             )}
-                            <button className="btn-sm delete" onClick={() => deleteApp(app.id)}>Sil</button>
+                            {app.status !== 'İptal Edildi' && (
+                              <button className="btn-sm cancel" onClick={() => {
+                                if(confirm("Bu randevuyu iptal etmek istediğinize emin misiniz?")) {
+                                  updateStatus(app.id, 'İptal Edildi');
+                                }
+                              }}>İptal Et</button>
+                            )}
                           </div>
                         </td>
                       )}
@@ -502,12 +508,14 @@ const DoctorDashboard = () => {
         .status-badge.sm { padding: 0.2rem 0.6rem; font-size: 0.7rem; }
          .status-badge.bekliyor { background: #fff3cd; color: #856404; }
         .status-badge.onaylandı { background: #d4edda; color: #155724; }
-        .status-badge.tamamlandı { background: #e0f2fe; color: #0369a1; }
+         .status-badge.tamamlandı { background: #e0f2fe; color: #0369a1; }
+        .status-badge.iptal-edildi { background: #fef2f2; color: #b91c1c; }
         .action-btns { display: flex; gap: 0.5rem; }
-        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 8px; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 8px; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-sm:hover { opacity: 0.8; transform: translateY(-1px); }
         .btn-sm.success { background: var(--primary); color: white; }
         .btn-sm.status-complete { background: #0ea5e9; color: white; }
-        .btn-sm.delete { background: #fee2e2; color: #dc2626; }
+        .btn-sm.cancel { background: #fee2e2; color: #dc2626; }
 
         /* Patients View Layout */
         .patients-view-layout {
