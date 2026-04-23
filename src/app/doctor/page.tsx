@@ -346,8 +346,8 @@ const DoctorDashboard = () => {
                                 </div>
                               )}
                             </div>
-                          </div>
-                        ))}
+                            </React.Fragment>
+                          ))}
                         </div>
                       </div>
                     </div>
