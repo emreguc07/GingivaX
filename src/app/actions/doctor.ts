@@ -108,8 +108,10 @@ export async function getPatientsByDoctor() {
           service: true,
           date: true,
           time: true,
-          status: true
+          status: true,
+          imageUrl: true
         },
+
         orderBy: { createdAt: 'desc' }
       }
     }

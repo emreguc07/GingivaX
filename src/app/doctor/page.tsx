@@ -27,6 +27,7 @@ interface Patient {
     date: string;
     time: string;
     status: string;
+    imageUrl?: string | null;
   }[];
 }
 
@@ -247,6 +248,17 @@ const DoctorDashboard = () => {
                               <div className="h-main">
                                 <strong>{app.service}</strong>
                                 <span>📅 {app.date} | ⏰ {app.time}</span>
+                                {(app as any).imageUrl && (
+                                  <div className="history-image-preview" style={{marginTop: '0.8rem'}}>
+                                    <img 
+                                      src={(app as any).imageUrl} 
+                                      alt="Röntgen" 
+                                      style={{width: '60px', height: '60px', borderRadius: '8px', cursor: 'pointer', border: '1px solid var(--border)'}} 
+                                      onClick={() => window.open((app as any).imageUrl, '_blank')}
+                                    />
+                                    <span style={{fontSize: '0.75rem', color: 'var(--primary)', marginLeft: '0.5rem', cursor: 'pointer'}} onClick={() => window.open((app as any).imageUrl, '_blank')}>🔍 Büyüt</span>
+                                  </div>
+                                )}
                               </div>
                               <span className={`status-badge sm ${app.status.toLowerCase().replace(' ', '-')}`}>
                                 {app.status}

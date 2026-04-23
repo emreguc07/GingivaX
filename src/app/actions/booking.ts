@@ -39,6 +39,7 @@ export async function createAppointment(formData: {
         doctorId: formData.doctorId,
         name: formData.name || session?.user?.name || "Anonim",
         userId: (session?.user as any)?.id || null,
+        imageUrl: formData.imageUrl || null
       }
     });
 

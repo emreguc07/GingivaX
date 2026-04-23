@@ -70,6 +70,7 @@ model Appointment {
   time      String
   status    String   @default("Bekliyor") // Bekliyor, Onaylandı, İptal Edildi
   name      String?  
+  imageUrl  String?  // Optional X-ray or dental photo
   createdAt DateTime @default(now())
   
   // Patient Relation
