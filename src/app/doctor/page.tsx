@@ -290,7 +290,8 @@ const DoctorDashboard = () => {
               </tbody>
             </table>
           </div>
-        )}
+        </div>
+      )}
 
         {activeTab === 'patients' && (
           <div className="patients-view-layout">
