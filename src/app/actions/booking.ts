@@ -52,7 +52,13 @@ export async function createAppointment(formData: {
       await sendEmail({
         to: session.user.email,
         subject: "Randevu Talebiniz Alındı - GingivaX",
-        body: `Sayın ${formData.name || session.user.name}, ${formData.date} - ${formData.time} tarihinde yaptığınız randevu başvurusu başarıyla alınmıştır. En kısa sürede onay bilgisi gönderilecektir.`
+        body: `Sayın ${formData.name || session.user.name}, randevu başvurunuz başarıyla sistemimize ulaşmıştır. Hekimimiz onayladıktan sonra size tekrar bildirim gönderilecektir.`,
+        details: {
+          date: formData.date,
+          time: formData.time,
+          service: formData.service,
+          doctor: "Belirlenen Hekim" // Or fetch doctor name if needed
+        }
       });
     }
 

@@ -88,7 +88,13 @@ export async function updateAppointmentStatus(id: number, status: string) {
     await sendEmail({
       to: updated.user.email,
       subject: "Randevunuz Onaylandı! - GingivaX",
-      body: `Sayın ${updated.user.name}, ${updated.date} tarihindeki randevunuz hekimimiz tarafından onaylanmıştır.`
+      body: `Sayın ${updated.user.name}, randevunuz hekimimiz tarafından onaylanmıştır.`,
+      details: {
+        date: updated.date,
+        time: updated.time,
+        service: updated.service,
+        doctor: (updated as any).doctor?.name || (session.user as any).name
+      }
     });
   }
 
