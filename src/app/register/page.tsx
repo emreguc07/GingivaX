@@ -13,6 +13,7 @@ export default function RegisterPage() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -33,9 +34,34 @@ export default function RegisterPage() {
       setError(data.error || 'Kayıt sırasında bir hata oluştu.');
       setLoading(false);
     } else {
-      router.push('/login');
+      setSuccess(true);
+      setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="auth-page">
+         <div className="teeth-background">
+          {[...Array(30)].map((_, i) => (
+            <div key={i} className="mini-tooth" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDuration: `${14 + Math.random() * 20}s`, opacity: 0.1 }}>🦷</div>
+          ))}
+        </div>
+        <div className="auth-form-side" style={{ flex: 1 }}>
+          <div className="auth-card-modern fade-in" style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📧</div>
+            <h1>E-postanızı Kontrol Edin</h1>
+            <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '2rem' }}>
+              Kaydınız başarıyla oluşturuldu! Giriş yapabilmek için <strong>{formData.email}</strong> adresine gönderdiğimiz doğrulama linkine tıklamanız gerekmektedir.
+            </p>
+            <Link href="/login" className="auth-btn-modern" style={{ display: 'inline-block', textDecoration: 'none' }}>
+              Giriş Ekranına Dön
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">

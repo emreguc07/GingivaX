@@ -24,13 +24,19 @@ function LoginForm() {
     const res = await signIn('credentials', {
       email,
       password,
-      callbackUrl,
-      redirect: true,
+      redirect: false,
     });
 
     if (res?.error) {
-      setError("Hatalı e-posta veya şifre.");
+      if (res.error === "CredentialsSignin") {
+        setError("Hatalı e-posta veya şifre.");
+      } else {
+        setError(res.error);
+      }
       setLoading(false);
+    } else {
+      router.push(callbackUrl);
+      router.refresh();
     }
   };
 
