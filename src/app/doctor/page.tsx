@@ -276,10 +276,18 @@ const DoctorDashboard = () => {
                         <td data-label="İşlemler">
                           <div className="action-btns">
                             {app.status === 'Bekliyor' && (
-                              <button className="btn-sm success" onClick={() => updateStatus(app.id, 'Onaylandı')}>Onayla</button>
+                              <button className="btn-sm success" onClick={() => {
+                                if(confirm("Bu randevuyu onaylamak istediğinize emin misiniz? Hastaya bilgilendirme maili gönderilecektir.")) {
+                                  updateStatus(app.id, 'Onaylandı');
+                                }
+                              }}>Onayla</button>
                             )}
                             {app.status === 'Onaylandı' && (
-                              <button className="btn-sm status-complete" onClick={() => updateStatus(app.id, 'Tamamlandı')}>Tamamla</button>
+                              <button className="btn-sm status-complete" onClick={() => {
+                                if(confirm("Bu randevuyu tamamlandı olarak işaretlemek istediğinize emin misiniz?")) {
+                                  updateStatus(app.id, 'Tamamlandı');
+                                }
+                              }}>Tamamla</button>
                             )}
                             {app.status !== 'İptal Edildi' && app.status !== 'Tamamlandı' && (
                               <button className="btn-sm cancel" onClick={() => {
