@@ -224,7 +224,12 @@ const DoctorDashboard = () => {
                       {!isAdmin && (
                         <td data-label="İşlemler">
                           <div className="action-btns">
-                            <button className="btn-sm success" onClick={() => updateStatus(app.id, 'Onaylandı')}>Onayla</button>
+                            {app.status === 'Bekliyor' && (
+                              <button className="btn-sm success" onClick={() => updateStatus(app.id, 'Onaylandı')}>Onayla</button>
+                            )}
+                            {app.status === 'Onaylandı' && (
+                              <button className="btn-sm status-complete" onClick={() => updateStatus(app.id, 'Tamamlandı')}>Tamamla</button>
+                            )}
                             <button className="btn-sm delete" onClick={() => deleteApp(app.id)}>Sil</button>
                           </div>
                         </td>
@@ -329,11 +334,13 @@ const DoctorDashboard = () => {
                                         setNoteContent(app.clinicalNote || '');
                                       }}>Notu Düzenle</button>
                                     </div>
-                                  ) : (
+                                  ) : app.status === 'Tamamlandı' ? (
                                     <button className="btn-add-note" onClick={() => {
                                       setEditingNoteId(app.id);
                                       setNoteContent('');
                                     }}>+ Tedavi Notu Ekle</button>
+                                  ) : (
+                                    <p className="note-hint">Not eklemek için randevunun tamamlanmış olması gerekir.</p>
                                   )}
                                 </div>
                               )}
@@ -431,11 +438,13 @@ const DoctorDashboard = () => {
         .doc-name-tag { padding: 0.3rem 0.6rem; background: var(--accent); color: var(--secondary); border-radius: 6px; font-size: 0.85rem; font-weight: 700; }
         .status-badge { padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; }
         .status-badge.sm { padding: 0.2rem 0.6rem; font-size: 0.7rem; }
-        .status-badge.bekliyor { background: #fff3cd; color: #856404; }
+         .status-badge.bekliyor { background: #fff3cd; color: #856404; }
         .status-badge.onaylandı { background: #d4edda; color: #155724; }
+        .status-badge.tamamlandı { background: #e0f2fe; color: #0369a1; }
         .action-btns { display: flex; gap: 0.5rem; }
         .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 8px; }
         .btn-sm.success { background: var(--primary); color: white; }
+        .btn-sm.status-complete { background: #0ea5e9; color: white; }
         .btn-sm.delete { background: #fee2e2; color: #dc2626; }
 
         /* Patients View Layout */
@@ -582,6 +591,7 @@ const DoctorDashboard = () => {
         .btn-edit-note { font-size: 0.75rem; color: var(--primary); background: none; border: none; cursor: pointer; font-weight: 700; text-decoration: underline; padding: 0; }
         .btn-add-note { font-size: 0.85rem; color: var(--primary); background: none; border: 1px dashed var(--primary); padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; }
         .btn-add-note:hover { background: var(--accent-light); }
+        .note-hint { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
       `}</style>
     </div>
   );
