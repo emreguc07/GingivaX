@@ -78,7 +78,8 @@ export async function updateAppointmentStatus(id: number, status: string) {
     where: whereClause,
     data: { status },
     include: {
-      user: { select: { email: true, name: true } }
+      user: { select: { email: true, name: true } },
+      doctor: { select: { name: true } }
     }
   });
 

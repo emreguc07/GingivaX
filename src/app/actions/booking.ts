@@ -49,6 +49,13 @@ export async function createAppointment(formData: {
 
     await logActivity("APPOINTMENT_NEW", `${formData.name || session?.user?.name || "Bir hasta"} ${formData.date} tarihine randevu oluşturdu.`);
 
+    // Final check for doctor name to ensure email is perfect
+    let finalDoctorName = formData.doctorName || "Belirlenmedi";
+    if (formData.doctorId && (!formData.doctorName || formData.doctorName === "Belirlenmedi")) {
+      const doc = await prisma.user.findUnique({ where: { id: formData.doctorId }, select: { name: true } });
+      if (doc) finalDoctorName = doc.name || "Hekim";
+    }
+
     if (session?.user?.email) {
       await sendEmail({
         to: session.user.email,
@@ -58,7 +65,7 @@ export async function createAppointment(formData: {
           date: formData.date,
           time: formData.time,
           service: formData.service,
-          doctor: formData.doctorName || "Belirlenmedi"
+          doctor: finalDoctorName
         }
       });
     }
