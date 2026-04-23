@@ -281,7 +281,7 @@ const DoctorDashboard = () => {
                             {app.status === 'Onaylandı' && (
                               <button className="btn-sm status-complete" onClick={() => updateStatus(app.id, 'Tamamlandı')}>Tamamla</button>
                             )}
-                            {app.status !== 'İptal Edildi' && (
+                            {app.status !== 'İptal Edildi' && app.status !== 'Tamamlandı' && (
                               <button className="btn-sm cancel" onClick={() => {
                                 if(confirm("Bu randevuyu iptal etmek istediğinize emin misiniz?")) {
                                   updateStatus(app.id, 'İptal Edildi');
