@@ -71,6 +71,7 @@ model Appointment {
   status    String   @default("Bekliyor") // Bekliyor, Onaylandı, İptal Edildi
   name      String?  
   imageUrl  String?  // Optional X-ray or dental photo
+  clinicalNote String? // Doctor's treatment notes
   createdAt DateTime @default(now())
   
   // Patient Relation

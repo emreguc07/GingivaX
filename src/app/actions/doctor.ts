@@ -121,7 +121,8 @@ export async function getPatientsByDoctor() {
           date: true,
           time: true,
           status: true,
-          imageUrl: true
+          imageUrl: true,
+          clinicalNote: true
         },
 
         orderBy: { createdAt: 'desc' }
@@ -130,5 +131,27 @@ export async function getPatientsByDoctor() {
   });
 
   return patients;
+}
+
+export async function saveClinicalNote(appointmentId: number, note: string) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user || (session.user as any).role !== 'DOCTOR') {
+    throw new Error("Yetkisiz erişim.");
+  }
+
+  const doctorId = (session.user as any).id;
+
+  const updated = await prisma.appointment.update({
+    where: { 
+      id: appointmentId,
+      doctorId: doctorId // Ensure this doctor owns the appointment
+    },
+    data: { clinicalNote: note }
+  });
+
+  await logActivity("APPOINTMENT_NOTE", `Randevu için tedavi notu güncellendi (ID: ${appointmentId})`);
+
+  return { success: true, updated };
 }
 

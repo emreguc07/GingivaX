@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { getAppointments, updateAppointmentStatus, deleteAppointment as apiDeleteAppointment, getPatientsByDoctor } from '@/app/actions/doctor';
+import { getAppointments, updateAppointmentStatus, deleteAppointment as apiDeleteAppointment, getPatientsByDoctor, saveClinicalNote } from '@/app/actions/doctor';
 
 interface Appointment {
   id: number;
@@ -28,6 +28,7 @@ interface Patient {
     time: string;
     status: string;
     imageUrl?: string | null;
+    clinicalNote?: string | null;
   }[];
 }
 
@@ -40,6 +41,8 @@ const DoctorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'appointments' | 'messages' | 'patients'>('appointments');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [noteContent, setNoteContent] = useState('');
 
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
@@ -87,6 +90,21 @@ const DoctorDashboard = () => {
   const handlePatientClick = (patientId: string) => {
     setSelectedPatientId(patientId);
     setActiveTab('patients');
+  };
+
+  const handleSaveNote = async (appId: number) => {
+    try {
+      await saveClinicalNote(appId, noteContent);
+      setPatients(patients.map(p => ({
+        ...p,
+        appointments: p.appointments.map(app => 
+          app.id === appId ? { ...app, clinicalNote: noteContent } : app
+        )
+      })));
+      setEditingNoteId(null);
+    } catch (err) {
+      alert("Not kaydedilemedi.");
+    }
   };
 
   return (
@@ -286,7 +304,42 @@ const DoctorDashboard = () => {
                                 {app.status}
                               </span>
                             </div>
-                          ))}
+
+                            <div className="history-note-section">
+                              {editingNoteId === app.id ? (
+                                <div className="note-editor fade-in">
+                                  <textarea 
+                                    className="note-textarea"
+                                    value={noteContent}
+                                    onChange={(e) => setNoteContent(e.target.value)}
+                                    placeholder="Klinik notlarınızı buraya yazın..."
+                                  />
+                                  <div className="note-actions">
+                                    <button className="btn-save-note" onClick={() => handleSaveNote(app.id)}>Kaydet</button>
+                                    <button className="btn-cancel-note" onClick={() => setEditingNoteId(null)}>İptal</button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="note-display">
+                                  {app.clinicalNote ? (
+                                    <div className="note-box">
+                                      <p>{app.clinicalNote}</p>
+                                      <button className="btn-edit-note" onClick={() => {
+                                        setEditingNoteId(app.id);
+                                        setNoteContent(app.clinicalNote || '');
+                                      }}>Notu Düzenle</button>
+                                    </div>
+                                  ) : (
+                                    <button className="btn-add-note" onClick={() => {
+                                      setEditingNoteId(app.id);
+                                      setNoteContent('');
+                                    }}>+ Tedavi Notu Ekle</button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                         </div>
                       </div>
                     </div>
@@ -502,6 +555,33 @@ const DoctorDashboard = () => {
           .appointments-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid #f0f0f0; }
           .appointments-table td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); }
         }
+
+        /* Note Section Styles */
+        .history-note-section {
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px dashed var(--border);
+        }
+        .note-textarea {
+          width: 100%;
+          min-height: 100px;
+          padding: 1rem;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          background: white;
+          font-family: inherit;
+          font-size: 0.9rem;
+          resize: vertical;
+          margin-bottom: 0.5rem;
+        }
+        .note-actions { display: flex; gap: 0.5rem; }
+        .btn-save-note { background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; }
+        .btn-cancel-note { background: var(--text-muted); color: white; padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; }
+        .note-box { background: #f8fafc; padding: 1rem; border-radius: 12px; position: relative; }
+        .note-box p { font-size: 0.9rem; color: #475569; line-height: 1.5; margin-bottom: 0.8rem; white-space: pre-wrap; }
+        .btn-edit-note { font-size: 0.75rem; color: var(--primary); background: none; border: none; cursor: pointer; font-weight: 700; text-decoration: underline; padding: 0; }
+        .btn-add-note { font-size: 0.85rem; color: var(--primary); background: none; border: 1px dashed var(--primary); padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .btn-add-note:hover { background: var(--accent-light); }
       `}</style>
     </div>
   );
