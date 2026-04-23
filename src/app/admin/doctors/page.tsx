@@ -90,8 +90,9 @@ export default function DoctorManagement() {
         <div className="admin-header">
           <h1>Hekim Yönetimi</h1>
           <div className="admin-nav">
-            <Link href="/admin">Genel Bakış</Link>
-            <Link href="/admin/doctors" className="active">Hekim Yönetimi</Link>
+            <Link href="/admin">Dashboard</Link>
+            <Link href="/admin/doctors" className="active">Hekimler</Link>
+            <Link href="/admin/reviews">Yorumlar</Link>
           </div>
         </div>
 

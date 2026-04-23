@@ -72,3 +72,33 @@ export async function getLatestReviews() {
     orderBy: { createdAt: 'desc' }
   });
 }
+
+export async function getAllReviews() {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any).role !== 'ADMIN') {
+    throw new Error("Yetkisiz erişim.");
+  }
+
+  return await prisma.review.findMany({
+    include: {
+      patient: { select: { name: true, email: true } },
+      doctor: { select: { name: true } },
+      appointment: { select: { service: true, date: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+}
+
+export async function deleteReview(id: string) {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any).role !== 'ADMIN') {
+    throw new Error("Yetkisiz erişim.");
+  }
+
+  await prisma.review.delete({
+    where: { id }
+  });
+
+  await logActivity("REVIEW_DELETE", `Bir hekim yorumu yönetici tarafından silindi (ID: ${id})`);
+  return { success: true };
+}
