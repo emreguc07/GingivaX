@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { createAppointment } from '@/app/actions/booking';
 import { getDoctorsList } from '@/app/actions/doctors';
+import { getBookedSlots } from '@/app/actions/appointment';
 import './randevu.css';
 
 interface Doctor {
@@ -17,6 +18,7 @@ export default function BookingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     service: '',
@@ -25,6 +27,7 @@ export default function BookingPage() {
     date: '',
     time: ''
   });
+
 
   // Auto-fill name when session is available
   useEffect(() => {
@@ -43,6 +46,16 @@ export default function BookingPage() {
     }
     fetchDoctors();
   }, []);
+
+  useEffect(() => {
+    async function fetchBooked() {
+      if (formData.doctorId && formData.date) {
+        const slots = await getBookedSlots(formData.doctorId, formData.date);
+        setBookedSlots(slots);
+      }
+    }
+    fetchBooked();
+  }, [formData.doctorId, formData.date]);
 
   const services = [
     { id: 'implant', name: 'İmplant Tedavisi', icon: '🦷' },
@@ -103,7 +116,7 @@ export default function BookingPage() {
                   <div className="services-grid-booking">
                     {services.map(s => (
                       <button 
-                        key={s.id}
+                         key={s.id}
                         className={`service-btn ${formData.service === s.name ? 'selected' : ''}`}
                         onClick={() => {
                           setFormData({...formData, service: s.name});
@@ -156,17 +169,22 @@ export default function BookingPage() {
                       min={new Date().toISOString().split('T')[0]}
                     />
                     <div className="full-time-grid">
-                      {timeSlots.map(t => (
-                        <button 
-                          key={t}
-                          className={`time-chip ${formData.time === t ? 'selected' : ''}`}
-                          onClick={() => setFormData({...formData, time: t})}
-                        >
-                          {t}
-                        </button>
-                      ))}
+                      {timeSlots.map(t => {
+                        const isBooked = bookedSlots.includes(t);
+                        return (
+                          <button 
+                            key={t}
+                            className={`time-chip ${formData.time === t ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
+                            disabled={isBooked}
+                            onClick={() => setFormData({...formData, time: t})}
+                          >
+                            {t} {isBooked && '(Dolu)'}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
+
                   <div className="step-actions-row">
                     <button className="btn-back" onClick={() => setStep(2)}>Geri</button>
                     <button 

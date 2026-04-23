@@ -16,6 +16,7 @@ model User {
   password      String?
   role          String    @default("USER") // ADMIN, DOCTOR, USER
   image         String?
+  phone         String?
   
   // Doctor Profile Fields (Dynamic)
   specialty     String?

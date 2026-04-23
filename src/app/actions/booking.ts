@@ -14,6 +14,21 @@ export async function createAppointment(formData: {
 }) {
   try {
     const session = await getServerSession(authOptions);
+
+    if (formData.doctorId) {
+      const existing = await prisma.appointment.findFirst({
+        where: {
+          doctorId: formData.doctorId,
+          date: formData.date,
+          time: formData.time,
+          status: { not: "İptal Edildi" }
+        }
+      });
+
+      if (existing) {
+        return { success: false, error: "Bu saat dilimi az önce başkası tarafından alındı." };
+      }
+    }
     
     const appointment = await prisma.appointment.create({
       data: {
@@ -25,6 +40,7 @@ export async function createAppointment(formData: {
         userId: (session?.user as any)?.id || null,
       }
     });
+
 
     return { success: true, appointment };
   } catch (error) {

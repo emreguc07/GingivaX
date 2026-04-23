@@ -37,8 +37,31 @@ export async function getProfileData() {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
       createdAt: user.createdAt,
     },
     appointments: user.appointments
   };
 }
+
+export async function updateUserProfile(data: { name: string, phone: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !(session.user as any).id) {
+    return { success: false, error: "Oturum bulunamadı." };
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: (session.user as any).id },
+      data: {
+        name: data.name,
+        phone: data.phone,
+      }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("UPDATE_PROFILE_ERROR", error);
+    return { success: false, error: "Profil güncellenemedi." };
+  }
+}
+

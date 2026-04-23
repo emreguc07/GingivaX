@@ -152,12 +152,96 @@
   color: var(--primary);
 }
 
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn-edit-inline {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-edit-inline:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  min-width: 300px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.form-group input {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-save {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: var(--text-muted);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 @media (max-width: 768px) {
   .user-info-card {
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
     padding: 2rem;
+  }
+  .flex-row {
+    justify-content: center;
+  }
+  .edit-form {
+    min-width: 100%;
   }
   .appointment-item {
     flex-direction: column;
@@ -171,3 +255,4 @@
     border-top: 1px solid var(--border);
   }
 }
+
