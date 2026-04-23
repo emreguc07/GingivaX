@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { getProfileData, updateUserProfile } from '@/app/actions/profile';
+import { createReview } from '@/app/actions/reviews';
 import './profile.css';
 
 interface Appointment {
@@ -12,7 +13,8 @@ interface Appointment {
   time: string;
   status: string;
   createdAt: string;
-  doctor?: { name: string };
+  doctor?: { id: string, name: string };
+  review?: { rating: number, comment: string } | null;
 }
 
 interface UserProfile {
@@ -30,6 +32,9 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', phone: '' });
   const [saving, setSaving] = useState(false);
+  const [selectedAppForReview, setSelectedAppForReview] = useState<Appointment | null>(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [reviewing, setReviewing] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -67,6 +72,32 @@ export default function ProfilePage() {
       alert(res.error);
     }
     setSaving(false);
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAppForReview) return;
+    setReviewing(true);
+    const res = await createReview({
+      appointmentId: selectedAppForReview.id,
+      rating: reviewForm.rating,
+      comment: reviewForm.comment
+    });
+    if (res.success) {
+      if (data) {
+        setData({
+          ...data,
+          appointments: data.appointments.map(app => 
+            app.id === selectedAppForReview.id ? { ...app, review: res.review as any } : app
+          )
+        });
+      }
+      setSelectedAppForReview(null);
+      setReviewForm({ rating: 5, comment: '' });
+    } else {
+      alert("Yorum gönderilemedi.");
+    }
+    setReviewing(false);
   };
 
   if (loading) return <div className="loading-container">Yükleniyor...</div>;
@@ -153,6 +184,20 @@ export default function ProfilePage() {
                     <span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>
                       {app.status}
                     </span>
+                    {app.status === 'Tamamlandı' && !app.review && (
+                      <button 
+                        className="btn-review"
+                        onClick={() => setSelectedAppForReview(app)}
+                      >
+                        Yorum Yap
+                      </button>
+                    )}
+                    {app.review && (
+                      <div className="review-stat">
+                        <span className="star-rating">{'⭐'.repeat(app.review.rating)}</span>
+                        <span className="review-done">Yorum Yapıldı</span>
+                      </div>
+                    )}
                     <span className="created-at">
                       Talep Tarihi: {new Date(app.createdAt).toLocaleDateString('tr-TR')}
                     </span>
@@ -162,6 +207,48 @@ export default function ProfilePage() {
             )}
           </div>
         </section>
+
+        {/* Review Modal */}
+        {selectedAppForReview && (
+          <div className="modal-overlay" onClick={() => setSelectedAppForReview(null)}>
+            <div className="modal-card fade-in" onClick={e => e.stopPropagation()}>
+              <h2>Deneyiminizi Paylaşın</h2>
+              <p><strong>{selectedAppForReview.doctor?.name}</strong> ile olan <strong>{selectedAppForReview.service}</strong> randevunuz nasıldı?</p>
+              
+              <form onSubmit={handleReviewSubmit}>
+                <div className="star-selector">
+                  {[1, 2, 3, 4, 5].map(nu => (
+                    <button 
+                      type="button" 
+                      key={nu} 
+                      className={`star-btn ${reviewForm.rating >= nu ? 'active' : ''}`}
+                      onClick={() => setReviewForm({...reviewForm, rating: nu})}
+                    >
+                      ⭐
+                    </button>
+                  ))}
+                </div>
+
+                <div className="form-group">
+                  <label>Yorumunuz</label>
+                  <textarea 
+                    value={reviewForm.comment}
+                    onChange={e => setReviewForm({...reviewForm, comment: e.target.value})}
+                    placeholder="Doktorumuz ve hizmet hakkında ne düşünüyorsunuz?"
+                    required
+                  />
+                </div>
+
+                <div className="modal-actions">
+                  <button type="submit" className="btn-submit-review" disabled={reviewing}>
+                    {reviewing ? 'Gönderiliyor...' : 'Gönder'}
+                  </button>
+                  <button type="button" className="btn-cancel" onClick={() => setSelectedAppForReview(null)}>İptal</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

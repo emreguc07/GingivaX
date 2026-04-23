@@ -214,9 +214,36 @@
   font-weight: 500;
 }
 
+.charts-grid-admin {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  padding: 2.5rem;
+  border-radius: 32px;
+}
+
+.chart-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: var(--secondary);
+}
+
+.chart-container-inner {
+  width: 100%;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 992px) {
-  .admin-section-grid {
+  .admin-section-grid, .charts-grid-admin {
     grid-template-columns: 1fr;
   }
 }
+
 

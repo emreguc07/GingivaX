@@ -12,6 +12,7 @@ interface Doctor {
   specialty: string | null;
   bio: string | null;
   education: string | null;
+  doctorReviews?: { rating: number }[];
 }
 
 export default function DoctorCard({ doctor }: { doctor: Doctor }) {
@@ -40,7 +41,14 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           />
         </div>
         <div className="doctor-info">
-          <span className="specialty-badge">{doctor.specialty || 'Diş Hekimi'}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <span className="specialty-badge">{doctor.specialty || 'Diş Hekimi'}</span>
+            {doctor.doctorReviews && doctor.doctorReviews.length > 0 && (
+              <div className="rating-mini">
+                ⭐ { (doctor.doctorReviews.reduce((a, b) => a + b.rating, 0) / doctor.doctorReviews.length).toFixed(1) }
+              </div>
+            )}
+          </div>
           <h2>{doctor.name}</h2>
           <p className="doctor-bio">{doctor.bio || 'Hekimimiz hakkında bilgi yakında eklenecektir.'}</p>
           <div className="doctor-extra">

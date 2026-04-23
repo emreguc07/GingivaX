@@ -28,16 +28,52 @@ export async function getActivities() {
 export async function getClinicStats() {
   await verifyAdmin();
   
-  const [totalAppointments, totalDoctors, totalPatients] = await Promise.all([
+  const [totalAppointments, totalDoctors, totalPatients, appointments] = await Promise.all([
     prisma.appointment.count(),
     prisma.user.count({ where: { role: 'DOCTOR' } }),
     prisma.user.count({ where: { role: 'USER' } }),
+    prisma.appointment.findMany({
+      include: {
+        doctor: { select: { name: true } }
+      }
+    })
   ]);
+
+  // Transform data for charts
+  const serviceDistribution = appointments.reduce((acc: any, app) => {
+    acc[app.service] = (acc[app.service] || 0) + 1;
+    return acc;
+  }, {});
+
+  const doctorPerformance = appointments.reduce((acc: any, app) => {
+    const docName = app.doctor?.name || 'Atanmamış';
+    acc[docName] = (acc[docName] || 0) + 1;
+    return acc;
+  }, {});
+
+  // For monthly growth (Last 6 months)
+  const monthlyData: any = {};
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monthName = d.toLocaleString('tr-TR', { month: 'long' });
+    monthlyData[monthName] = 0;
+  }
+
+  appointments.forEach(app => {
+    const month = new Date(app.createdAt).toLocaleString('tr-TR', { month: 'long' });
+    if (monthlyData[month] !== undefined) {
+      monthlyData[month]++;
+    }
+  });
 
   return {
     totalAppointments,
     totalDoctors,
-    totalPatients
+    totalPatients,
+    serviceData: Object.entries(serviceDistribution).map(([name, value]) => ({ name, value })),
+    doctorData: Object.entries(doctorPerformance).map(([name, value]) => ({ name, value })),
+    growthData: Object.entries(monthlyData).map(([name, value]) => ({ name, value }))
   };
 }
 

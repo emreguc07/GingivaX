@@ -20,8 +20,9 @@ export async function getProfileData() {
       appointments: {
         include: {
           doctor: {
-            select: { name: true }
-          }
+            select: { id: true, name: true }
+          },
+          review: true
         },
         orderBy: { createdAt: 'desc' }
       }

@@ -33,6 +33,8 @@ model User {
   receivedMessages    Message[]     @relation("ReceivedMessages")
   workingDays         WorkingDay[]
   offDates            OffDate[]
+  reviews             Review[]      @relation("PatientReviews")
+  doctorReviews       Review[]      @relation("DoctorReviews")
 }
 
 model WorkingDay {
@@ -81,6 +83,9 @@ model Appointment {
   // Doctor Relation
   doctor    User?    @relation("DoctorAppointments", fields: [doctorId], references: [id])
   doctorId  String?
+  
+  // Review Relation
+  review    Review?
 }
 
 model Message {
@@ -94,4 +99,19 @@ model Message {
   senderId    String
   receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   receiverId  String
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  rating        Int         // 1-5
+  comment       String      @db.Text
+  createdAt     DateTime    @default(now())
+  
+  // Relations
+  patient       User        @relation("PatientReviews", fields: [patientId], references: [id])
+  patientId     String
+  doctor        User        @relation("DoctorReviews", fields: [doctorId], references: [id])
+  doctorId      String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  appointmentId Int         @unique
 }

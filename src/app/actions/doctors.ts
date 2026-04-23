@@ -14,6 +14,9 @@ export async function getDoctorsList() {
         bio: true,
         education: true,
         image: true,
+        doctorReviews: {
+          select: { rating: true, comment: true }
+        }
       }
     });
     return { success: true, doctors };
