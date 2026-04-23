@@ -24,6 +24,8 @@ export async function getActivities() {
     take: 10
   });
 }
+
+export async function getClinicStats() {
   await verifyAdmin();
   
   const [totalAppointments, totalDoctors, totalPatients] = await Promise.all([
