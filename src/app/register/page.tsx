@@ -218,7 +218,13 @@ export default function RegisterPage() {
                 type="text" 
                 className="input-modern"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const formatted = val.split(' ').map(word => 
+                    word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1)
+                  ).join(' ');
+                  setFormData({...formData, name: formatted});
+                }}
                 required 
                 placeholder="Örn: Mehmet Öz"
               />
