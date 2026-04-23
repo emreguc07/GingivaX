@@ -34,6 +34,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Hatalı şifre.");
         }
 
+        if (!user.emailVerified) {
+          throw new Error("Lütfen giriş yapmadan önce e-postanızı doğrulayın.");
+        }
+
         return {
           id: user.id,
           email: user.email,

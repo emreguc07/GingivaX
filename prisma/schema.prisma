@@ -17,6 +17,7 @@ model User {
   role          String    @default("USER") // ADMIN, DOCTOR, USER
   image         String?
   phone         String?
+  emailVerified     DateTime?
   
   // Doctor Profile Fields (Dynamic)
   specialty     String?
@@ -35,6 +36,15 @@ model User {
   offDates            OffDate[]
   reviews             Review[]      @relation("PatientReviews")
   doctorReviews       Review[]      @relation("DoctorReviews")
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
 }
 
 model WorkingDay {

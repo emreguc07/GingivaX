@@ -14,9 +14,11 @@ interface EmailConfig {
     service: string;
     doctor: string;
   }
+  actionUrl?: string;
+  actionText?: string;
 }
 
-export async function sendEmail({ to, subject, body, details }: EmailConfig) {
+export async function sendEmail({ to, subject, body, details, actionUrl, actionText }: EmailConfig) {
   try {
     const detailsHtml = details ? `
       <div style="margin-top: 20px; padding: 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;">
@@ -25,6 +27,12 @@ export async function sendEmail({ to, subject, body, details }: EmailConfig) {
         <p style="margin: 5px 0; font-size: 14px;"><b>⏰ Saat:</b> ${details.time}</p>
         <p style="margin: 5px 0; font-size: 14px;"><b>🦷 Hizmet:</b> ${details.service}</p>
         <p style="margin: 5px 0; font-size: 14px;"><b>👨‍⚕️ Hekim:</b> ${details.doctor}</p>
+      </div>
+    ` : '';
+
+    const actionHtml = actionUrl ? `
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${actionUrl}" style="background: #00CED1; color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 700; display: inline-block;">${actionText || 'Devam Et'}</a>
       </div>
     ` : '';
 
@@ -43,6 +51,7 @@ export async function sendEmail({ to, subject, body, details }: EmailConfig) {
               <h2 style="margin-top: 0; font-size: 20px;">${subject}</h2>
               <p style="line-height: 1.6; font-size: 16px;">${body}</p>
               ${detailsHtml}
+              ${actionHtml}
             </div>
             <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #999;">
               <p>&copy; 2026 GingivaX Klinik Yönetim Sistemi. Tüm hakları saklıdır.</p>
