@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { logActivity } from "@/lib/activity";
 
 export async function getAppointments() {
   const session = await getServerSession(authOptions);
@@ -56,10 +57,14 @@ export async function updateAppointmentStatus(id: number, status: string) {
     whereClause.doctorId = userId;
   }
 
-  return await prisma.appointment.update({
+  const updated = await prisma.appointment.update({
     where: whereClause,
     data: { status }
   });
+
+  await logActivity("APPOINTMENT_STATUS", `Randevu durumu '${status}' olarak güncellendi (ID: ${id})`);
+
+  return updated;
 }
 
 export async function deleteAppointment(id: number) {
@@ -69,9 +74,11 @@ export async function deleteAppointment(id: number) {
     throw new Error("Yetkisiz erişim. Sadece hekimler veya yöneticiler randevuyu silebilir.");
   }
 
-  return await prisma.appointment.delete({
+  await prisma.appointment.delete({
     where: { id }
   });
+
+  await logActivity("APPOINTMENT_DELETE", `Bir randevu kaydı silindi (ID: ${id})`);
 }
 
 export async function getPatientsByDoctor() {

@@ -142,3 +142,81 @@
   font-weight: 700;
   font-size: 0.85rem;
 }
+
+/* Activity Feed & Layout */
+.admin-section-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.activity-feed-card {
+  padding: 2.5rem;
+  border-radius: 32px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.activity-item {
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px dotted var(--border);
+}
+
+.activity-item:last-child { border: none; }
+
+.activity-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  width: 70px;
+  font-weight: 600;
+}
+
+.activity-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.activity-icon-wrap.appointment { background: #eff6ff; color: #3b82f6; }
+.activity-icon-wrap.user { background: #ecfdf5; color: #10b981; }
+.activity-icon-wrap.message { background: #fffbeb; color: #f59e0b; }
+
+.activity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.activity-type {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.activity-content {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+@media (max-width: 992px) {
+  .admin-section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

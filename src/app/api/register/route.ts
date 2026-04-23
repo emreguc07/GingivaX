@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(req: Request) {
   try {
@@ -28,6 +29,8 @@ export async function POST(req: Request) {
         password: hashedPassword,
       },
     });
+
+    await logActivity("USER_REGISTER", `${name} isimli yeni bir hasta kayıt oldu.`);
 
     return NextResponse.json({ message: "Kayıt başarılı." }, { status: 201 });
   } catch (error) {

@@ -13,7 +13,17 @@ async function verifyAdmin() {
   }
 }
 
-export async function getClinicStats() {
+export async function getActivities() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    throw new Error("Yetkisiz erişim.");
+  }
+
+  return await prisma.activity.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 10
+  });
+}
   await verifyAdmin();
   
   const [totalAppointments, totalDoctors, totalPatients] = await Promise.all([

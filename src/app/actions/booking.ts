@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { logActivity } from "@/lib/activity";
 
 export async function createAppointment(formData: {
   service: string;
@@ -41,6 +42,8 @@ export async function createAppointment(formData: {
       }
     });
 
+
+    await logActivity("APPOINTMENT_NEW", `${formData.name || session?.user?.name || "Bir hasta"} ${formData.date} tarihine randevu oluşturdu.`);
 
     return { success: true, appointment };
   } catch (error) {

@@ -56,8 +56,14 @@ model OffDate {
   @@unique([doctorId, date])
 }
 
-model Appointment {
+model Activity {
+  id        String   @id @default(cuid())
+  type      String   // APPOINTMENT_NEW, USER_REGISTER, MESSAGE_SENT, etc.
+  content   String
+  createdAt DateTime @default(now())
+}
 
+model Appointment {
   id        Int      @id @default(autoincrement())
   service   String
   date      String
