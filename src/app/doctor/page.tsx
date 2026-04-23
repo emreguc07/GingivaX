@@ -1,7 +1,7 @@
 // src/app/doctor/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { getAppointments, updateAppointmentStatus, deleteAppointment as apiDeleteAppointment, getPatientsByDoctor, saveClinicalNote } from '@/app/actions/doctor';
 
@@ -289,7 +289,8 @@ const DoctorDashboard = () => {
                         <h3>Randevu Geçmişi</h3>
                         <div className="history-list">
                           {patient.appointments.map(app => (
-                            <div key={app.id} className="history-item">
+                            <React.Fragment key={app.id}>
+                              <div className="history-item">
                               <div className="h-main">
                                 <strong>{app.service}</strong>
                                 <span>📅 {app.date} | ⏰ {app.time}</span>
