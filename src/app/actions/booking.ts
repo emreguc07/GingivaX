@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { sendEmail } from "@/lib/notifications";
 
 export async function createAppointment(formData: {
   service: string;
@@ -45,6 +46,14 @@ export async function createAppointment(formData: {
 
 
     await logActivity("APPOINTMENT_NEW", `${formData.name || session?.user?.name || "Bir hasta"} ${formData.date} tarihine randevu oluşturdu.`);
+
+    if (session?.user?.email) {
+      await sendEmail({
+        to: session.user.email,
+        subject: "Randevu Talebiniz Alındı - GingivaX",
+        body: `Sayın ${formData.name || session.user.name}, ${formData.date} - ${formData.time} tarihinde yaptığınız randevu başvurusu başarıyla alınmıştır. En kısa sürede onay bilgisi gönderilecektir.`
+      });
+    }
 
     return { success: true, appointment };
   } catch (error) {

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { sendEmail } from "@/lib/notifications";
 
 export async function getAppointments() {
   const session = await getServerSession(authOptions);
@@ -59,10 +60,21 @@ export async function updateAppointmentStatus(id: number, status: string) {
 
   const updated = await prisma.appointment.update({
     where: whereClause,
-    data: { status }
+    data: { status },
+    include: {
+      user: { select: { email: true, name: true } }
+    }
   });
 
   await logActivity("APPOINTMENT_STATUS", `Randevu durumu '${status}' olarak güncellendi (ID: ${id})`);
+
+  if (status === 'Onaylandı' && updated.user?.email) {
+    await sendEmail({
+      to: updated.user.email,
+      subject: "Randevunuz Onaylandı! - GingivaX",
+      body: `Sayın ${updated.user.name}, ${updated.date} tarihindeki randevunuz hekimimiz tarafından onaylanmıştır.`
+    });
+  }
 
   return updated;
 }
