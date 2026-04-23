@@ -47,6 +47,7 @@ const DoctorDashboard = () => {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('Hepsi');
+  const [visibleCount, setVisibleCount] = useState(15);
 
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
@@ -242,7 +243,7 @@ const DoctorDashboard = () => {
                 ) : filteredAppointments.length === 0 ? (
                   <tr><td colSpan={7} style={{ textAlign: 'center', padding: '3rem' }}>Eşleşen randevu bulunmuyor.</td></tr>
                 ) : (
-                  filteredAppointments.map(app => (
+                  filteredAppointments.slice(0, visibleCount).map(app => (
                     <tr key={app.id}>
                       <td data-label="Hasta Adı">
                         <button 
@@ -296,6 +297,17 @@ const DoctorDashboard = () => {
               </tbody>
             </table>
           </div>
+          
+          {filteredAppointments.length > visibleCount && (
+            <div className="load-more-container">
+              <button 
+                className="btn-load-more" 
+                onClick={() => setVisibleCount(prev => prev + 15)}
+              >
+                Daha Fazla Göster ({filteredAppointments.length - visibleCount} randevu daha var)
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -709,6 +721,27 @@ const DoctorDashboard = () => {
         }
         .modal-close-btn:hover { transform: scale(1.1); background: var(--primary); color: white; }
         
+        .load-more-container {
+          display: flex;
+          justify-content: center;
+          margin-top: 2rem;
+        }
+        .btn-load-more {
+          padding: 0.8rem 2rem;
+          background: white;
+          color: var(--primary);
+          border: 2px solid var(--primary);
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+        .btn-load-more:hover {
+          background: var(--primary);
+          color: white;
+          box-shadow: 0 5px 15px rgba(0, 206, 209, 0.2);
+        }
+
         .filter-bar {
           display: flex;
           justify-content: space-between;
