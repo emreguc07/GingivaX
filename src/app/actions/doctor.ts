@@ -19,9 +19,17 @@ export async function getAppointments() {
 
   if (userRole === 'ADMIN') {
     return await prisma.appointment.findMany({
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        doctor: { select: { name: true } }
+      select: {
+        id: true,
+        service: true,
+        date: true,
+        time: true,
+        status: true,
+        name: true,
+        imageUrl: true,
+        userId: true,
+        doctor: { select: { name: true } },
+        user: { select: { id: true, name: true, email: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -29,7 +37,15 @@ export async function getAppointments() {
 
   return await prisma.appointment.findMany({
     where: { doctorId: userId },
-    include: {
+    select: {
+      id: true,
+      service: true,
+      date: true,
+      time: true,
+      status: true,
+      name: true,
+      imageUrl: true,
+      userId: true,
       user: {
         select: {
           id: true,

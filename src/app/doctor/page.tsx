@@ -14,6 +14,7 @@ interface Appointment {
   status: string;
   userId?: string;
   doctor?: { name: string };
+  imageUrl?: string | null;
 }
 
 interface Patient {
@@ -218,9 +219,14 @@ const DoctorDashboard = () => {
                       <td data-label="Tarih">{app.date}</td>
                       <td data-label="Saat">{app.time}</td>
                       <td data-label="Durum">
-                        <span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>
-                          {app.status}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>
+                            {app.status}
+                          </span>
+                          {app.imageUrl && (
+                            <span title="Fotoğraf yüklendi" style={{ fontSize: '1.2rem', cursor: 'help' }}>📸</span>
+                          )}
+                        </div>
                       </td>
                       {!isAdmin && (
                         <td data-label="İşlemler">
