@@ -45,6 +45,8 @@ const DoctorDashboard = () => {
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [noteContent, setNoteContent] = useState('');
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('Hepsi');
 
   const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
@@ -113,6 +115,13 @@ const DoctorDashboard = () => {
       alert("Not kaydedilemedi.");
     }
   };
+
+  const filteredAppointments = appointments.filter(app => {
+    const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         app.service.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'Hepsi' || app.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="container dashboard-container fade-in">
@@ -191,8 +200,31 @@ const DoctorDashboard = () => {
 
       <div className="dashboard-content">
         {activeTab === 'appointments' && (
-          <div className="table-wrapper glass">
-            <table className="appointments-table">
+          <div className="appointments-section">
+            <div className="filter-bar glass">
+              <div className="search-wrap">
+                <span className="search-icon">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Hasta adı veya hizmet ara..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="status-filter">
+                <label>Durum:</label>
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="Hepsi">Tüm Randevular</option>
+                  <option value="Bekliyor">Bekleyenler</option>
+                  <option value="Onaylandı">Onaylananlar</option>
+                  <option value="Tamamlandı">Tamamlananlar</option>
+                  <option value="İptal Edildi">İptal Edilenler</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="table-wrapper glass">
+              <table className="appointments-table">
               <thead>
                 <tr>
                   <th>Hasta Adı</th>
@@ -207,10 +239,10 @@ const DoctorDashboard = () => {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={7} style={{ textAlign: 'center', padding: '3rem' }}>Yükleniyor...</td></tr>
-                ) : appointments.length === 0 ? (
-                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '3rem' }}>Randevu bulunmuyor.</td></tr>
+                ) : filteredAppointments.length === 0 ? (
+                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '3rem' }}>Eşleşen randevu bulunmuyor.</td></tr>
                 ) : (
-                  appointments.map(app => (
+                  filteredAppointments.map(app => (
                     <tr key={app.id}>
                       <td data-label="Hasta Adı">
                         <button 
@@ -667,6 +699,65 @@ const DoctorDashboard = () => {
           transition: 0.3s;
         }
         .modal-close-btn:hover { transform: scale(1.1); background: var(--primary); color: white; }
+        
+        .filter-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.2rem 2rem;
+          margin-bottom: 2rem;
+          gap: 1.5rem;
+          border-radius: 20px;
+        }
+        .search-wrap {
+          flex: 1;
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+        .search-icon {
+          position: absolute;
+          left: 1rem;
+          opacity: 0.5;
+        }
+        .search-wrap input {
+          width: 100%;
+          padding: 0.8rem 1rem 0.8rem 2.8rem;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          font-family: inherit;
+          font-size: 0.9rem;
+          transition: 0.3s;
+        }
+        .search-wrap input:focus {
+          border-color: var(--primary);
+          outline: none;
+          box-shadow: 0 0 0 4px rgba(0, 206, 209, 0.1);
+        }
+        .status-filter {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+        .status-filter label {
+          font-weight: 700;
+          font-size: 0.9rem;
+          color: var(--text-muted);
+        }
+        .status-filter select {
+          padding: 0.8rem 1.2rem;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          font-family: inherit;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          background: white;
+        }
+
+        @media (max-width: 768px) {
+          .filter-bar { flex-direction: column; align-items: stretch; }
+        }
         
         .live-indicator {
           display: flex;
