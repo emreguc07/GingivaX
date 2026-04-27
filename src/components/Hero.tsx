@@ -39,7 +39,7 @@ const Hero = () => {
             <button 
               className="btn-secondary"
               onClick={() => {
-                document.getElementById('hizmetler')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('hizmetler')?.scrollIntoView();
               }}
             >
               Tedavilerimizi İnceleyin
