@@ -1,8 +1,8 @@
-// src/app/randevu/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { createAppointment } from '@/app/actions/booking';
 import { getDoctorsList } from '@/app/actions/doctors';
 import { getBookedSlots } from '@/app/actions/appointment';
@@ -14,8 +14,9 @@ interface Doctor {
   name: string | null;
 }
 
-export default function BookingPage() {
+function BookingContent() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -33,6 +34,14 @@ export default function BookingPage() {
     imageUrl: ''
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    const docId = searchParams.get('doctorId');
+    const docName = searchParams.get('doctorName');
+    if (docId && docName) {
+      setFormData(prev => ({ ...prev, doctorId: docId, doctorName: docName }));
+    }
+  }, [searchParams]);
 
   const services = SERVICES;
 
@@ -340,5 +349,13 @@ export default function BookingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="loading-container">Sayfa Yükleniyor...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

@@ -72,29 +72,44 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
               ))}
             </div>
           )}
-          <div className="doctor-social">
-            <button 
-              className="btn-chat" 
-              onClick={handleChatStart}
-              style={{
-                background: 'var(--primary)',
-                color: 'white',
-                padding: '0.6rem 1.2rem',
-                borderRadius: '50px',
-                border: 'none',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                flex: 1,
-                justifyContent: 'center',
-                transition: '0.3s'
-              }}
-            >
-              <span>💬 Sohbet Başlat</span>
-            </button>
-            <button className="btn-social">LinkedIn</button>
+          <div className="doctor-social" style={{flexDirection: 'column', gap: '0.75rem'}}>
+            <div style={{display: 'flex', gap: '0.75rem', width: '100%'}}>
+              <button 
+                className="btn-chat" 
+                onClick={handleChatStart}
+                style={{
+                  background: 'white',
+                  color: 'var(--secondary)',
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '50px',
+                  border: '1px solid var(--border)',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  flex: 1,
+                  justifyContent: 'center',
+                  transition: '0.3s'
+                }}
+              >
+                <span>💬 Sohbet</span>
+              </button>
+              <button 
+                className="btn-primary" 
+                onClick={() => router.push(`/randevu?doctorId=${doctor.id}&doctorName=${encodeURIComponent(doctor.name)}`)}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '50px',
+                  fontWeight: '700',
+                  flex: 1,
+                  justifyContent: 'center'
+                }}
+              >
+                📅 Randevu Al
+              </button>
+            </div>
+            <button className="btn-social" style={{width: '100%', borderRadius: '50px'}}>Hekim Profilini İncele</button>
           </div>
         </div>
       </div>
