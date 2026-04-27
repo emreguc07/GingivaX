@@ -36,7 +36,14 @@ const Hero = () => {
             >
               Hemen Randevu Al
             </button>
-            <button className="btn-secondary">Tedavilerimizi İnceleyin</button>
+            <button 
+              className="btn-secondary"
+              onClick={() => {
+                document.getElementById('hizmetler')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Tedavilerimizi İnceleyin
+            </button>
           </div>
           <div className="hero-stats">
             <div className="stat-item">
