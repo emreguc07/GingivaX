@@ -21,6 +21,7 @@
   margin-bottom: 1rem;
   background: linear-gradient(135deg, var(--secondary), var(--primary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -51,6 +52,7 @@
   border-radius: 2px;
   margin-top: -24px; /* Align with the dots */
 }
+.step-dot {
   width: 36px;
   height: 36px;
   border-radius: 50%;

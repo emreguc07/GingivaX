@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { createAppointment } from '@/app/actions/booking';
+import { SERVICES } from '@/lib/constants';
 
 const BookingSystem = () => {
   const { data: session, status } = useSession();
@@ -18,12 +19,7 @@ const BookingSystem = () => {
     time: ''
   });
 
-  const services = [
-    { id: 'implant', name: 'İmplant Tedavisi', icon: '🦷' },
-    { id: 'whitening', name: 'Diş Beyazlatma', icon: '✨' },
-    { id: 'checkup', name: 'Genel Muayene', icon: '🛡️' },
-    { id: 'ortho', name: 'Ortodonti', icon: '📏' }
-  ];
+  const services = SERVICES;
 
   const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
 

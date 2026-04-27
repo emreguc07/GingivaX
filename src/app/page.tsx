@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import "./page.css";
+import { SERVICES } from "@/lib/constants";
 
 export default function Home() {
   return (
@@ -13,24 +14,15 @@ export default function Home() {
         </div>
         
         <div className="services-grid">
-          <div className="service-card glass">
-            <div className="service-icon">🦷</div>
-            <h3>İmplant Tedavisi</h3>
-            <p>Eksik dişlerinizi en doğal ve sağlam şekilde tamamlıyoruz.</p>
-          </div>
-          <div className="service-card glass">
-            <div className="service-icon">✨</div>
-            <h3>Diş Beyazlatma</h3>
-            <p>Daha parlak ve estetik bir gülüşe sadece bir seansta kavuşun.</p>
-          </div>
-          <div className="service-card glass">
-            <div className="service-icon">🛡️</div>
-            <h3>Genel Muayene</h3>
-            <p>Düzenli kontrollerle diş sağlığınızı ömür boyu koruyun.</p>
-          </div>
+          {SERVICES.map(service => (
+            <div key={service.id} className="service-card glass">
+              <div className="service-icon">{service.icon}</div>
+              <h3>{service.name}</h3>
+              <p>{service.description}</p>
+            </div>
+          ))}
         </div>
       </section>
-
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { createAppointment } from '@/app/actions/booking';
 import { getDoctorsList } from '@/app/actions/doctors';
 import { getBookedSlots } from '@/app/actions/appointment';
 import './randevu.css';
+import { SERVICES } from '@/lib/constants';
 
 interface Doctor {
   id: string;
@@ -32,6 +33,8 @@ export default function BookingPage() {
     imageUrl: ''
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const services = SERVICES;
 
   useEffect(() => {
     const userName = session?.user?.name;
@@ -109,13 +112,6 @@ export default function BookingPage() {
       };
     });
   };
-
-  const services = [
-    { id: 'implant', name: 'İmplant Tedavisi', icon: '🦷' },
-    { id: 'whitening', name: 'Diş Beyazlatma', icon: '✨' },
-    { id: 'checkup', name: 'Genel Muayene', icon: '🛡️' },
-    { id: 'ortho', name: 'Ortodonti', icon: '📏' }
-  ];
 
   const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
