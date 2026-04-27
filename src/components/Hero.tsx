@@ -36,14 +36,13 @@ const Hero = () => {
             >
               Hemen Randevu Al
             </button>
-            <button 
+            <a 
+              href="#hizmetler"
               className="btn-secondary"
-              onClick={() => {
-                document.getElementById('hizmetler')?.scrollIntoView();
-              }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
             >
               Tedavilerimizi İnceleyin
-            </button>
+            </a>
           </div>
           <div className="hero-stats">
             <div className="stat-item">

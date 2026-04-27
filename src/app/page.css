@@ -47,7 +47,6 @@
 }
 
 .booking-section {
-  scroll-margin-top: 100px;
   background: radial-gradient(circle at center, rgba(0, 206, 209, 0.05), transparent 70%);
   padding-top: 5rem;
   padding-bottom: 7rem;
