@@ -32,7 +32,7 @@ const Footer = () => {
         <div className="footer-contact">
           <h4>İletişim</h4>
           <p>📍 Cumhuriyet Cad. No:123, Beşiktaş/İstanbul</p>
-          <p>📞 +90 555 123 45 67</p>
+          <p>📞 +90 546 473 40 63</p>
           <p>📧 info@gingivax.com</p>
         </div>
       </div>
