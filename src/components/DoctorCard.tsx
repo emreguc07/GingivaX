@@ -109,7 +109,6 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
                 📅 Randevu Al
               </button>
             </div>
-            <button className="btn-social" style={{width: '100%', borderRadius: '50px'}}>Hekim Profilini İncele</button>
           </div>
         </div>
       </div>
