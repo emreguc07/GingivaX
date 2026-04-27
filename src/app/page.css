@@ -5,6 +5,12 @@
   padding-bottom: 5rem;
 }
 
+@media (max-width: 768px) {
+  .page-wrapper {
+    gap: 4rem;
+  }
+}
+
 .services-section {
   scroll-margin-top: 100px;
 }
