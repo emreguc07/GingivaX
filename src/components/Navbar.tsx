@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import MessageBadge from './MessageBadge';
+import { smoothScrollTo } from '@/lib/utils';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -14,6 +15,15 @@ const Navbar = () => {
   const isAuthPage = pathname === '/login' || pathname === '/register';
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('/#') && pathname === '/') {
+      e.preventDefault();
+      const id = href.replace('/#', '');
+      smoothScrollTo(id, 1500);
+      closeMenu();
+    }
+  };
 
   return (
     <nav className={`navbar glass ${isMenuOpen ? 'is-open' : ''}`}>
@@ -41,9 +51,9 @@ const Navbar = () => {
 
             {/* NAVIGATION LINKS */}
             <div className="nav-links">
-              <Link href="/#hizmetler" onClick={closeMenu}>Hizmetler</Link>
+              <Link href="/#hizmetler" onClick={e => { handleNavClick(e, '/#hizmetler'); closeMenu(); }}>Hizmetler</Link>
               <Link href="/hekimlerimiz" onClick={closeMenu}>Hekimlerimiz</Link>
-              <Link href="/#hakkimizda" onClick={closeMenu}>Hakkımızda</Link>
+              <Link href="/#hakkimizda" onClick={e => { handleNavClick(e, '/#hakkimizda'); closeMenu(); }}>Hakkımızda</Link>
               
               {(session?.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin" className="doctor-link admin-btn" style={{borderColor: 'gold', color: 'gold'}} onClick={closeMenu}>Admin Panel</Link>

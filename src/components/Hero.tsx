@@ -3,6 +3,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { smoothScrollTo } from '@/lib/utils';
 import './Hero.css';
 
 const Hero = () => {
@@ -36,13 +37,12 @@ const Hero = () => {
             >
               Hemen Randevu Al
             </button>
-            <a 
-              href="#hizmetler"
+            <button 
               className="btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+              onClick={() => smoothScrollTo('hizmetler', 1500)}
             >
               Tedavilerimizi İnceleyin
-            </a>
+            </button>
           </div>
           <div className="hero-stats">
             <div className="stat-item">
