@@ -16,11 +16,7 @@ const Footer = () => {
           <p className="footer-description">
             Modern diş hekimliği anlayışını teknoloji ile birleştirerek, hastalarımıza en konforlu ve kaliteli hizmeti sunuyoruz.
           </p>
-          <div className="social-links">
-            <a href="#" aria-label="Instagram">📸</a>
-            <a href="#" aria-label="Facebook">📘</a>
-            <a href="#" aria-label="LinkedIn">💼</a>
-          </div>
+
         </div>
 
         <div className="footer-links">
