@@ -1,7 +1,7 @@
 import Hero from "@/components/Hero";
 import "./page.css";
 import { SERVICES } from "@/lib/constants";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
   const reviews = await prisma.review.findMany({
