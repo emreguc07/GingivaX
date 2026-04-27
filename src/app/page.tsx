@@ -1,8 +1,23 @@
 import Hero from "@/components/Hero";
 import "./page.css";
 import { SERVICES } from "@/lib/constants";
+import prisma from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const reviews = await prisma.review.findMany({
+    where: { rating: 5 },
+    include: {
+      patient: { select: { name: true } },
+      appointment: { select: { service: true } }
+    },
+    take: 10 // Get some latest 5-star reviews
+  });
+
+  // Randomly select 2 reviews
+  const randomReviews = reviews
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 2);
+
   return (
     <div className="page-wrapper">
       <Hero />
@@ -31,41 +46,25 @@ export default function Home() {
         </div>
         
         <div className="testimonials-grid">
-          <div className="testimonial-card glass">
-            <div className="rating">⭐⭐⭐⭐⭐</div>
-            <p className="comment">"İmplant tedavisi için geldim, süreç beklediğimden çok daha rahat geçti. Tüm ekibe teşekkürler!"</p>
-            <div className="patient-info">
-              <div className="patient-avatar">A</div>
-              <div>
-                <span className="patient-name">Ahmet Y.</span>
-                <span className="patient-service">İmplant Tedavisi</span>
+          {randomReviews.length > 0 ? (
+            randomReviews.map((review) => (
+              <div key={review.id} className="testimonial-card glass">
+                <div className="rating">{'⭐'.repeat(review.rating)}</div>
+                <p className="comment">"{review.comment}"</p>
+                <div className="patient-info">
+                  <div className="patient-avatar">
+                    {review.patient.name ? review.patient.name.charAt(0) : 'H'}
+                  </div>
+                  <div>
+                    <span className="patient-name">{review.patient.name || 'Misafir Hasta'}</span>
+                    <span className="patient-service">{review.appointment.service}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="testimonial-card glass">
-            <div className="rating">⭐⭐⭐⭐⭐</div>
-            <p className="comment">"Diş beyazlatma seansı sonrası gülüşüm tamamen değişti. Çok memnun kaldım, herkese tavsiye ederim."</p>
-            <div className="patient-info">
-              <div className="patient-avatar">S</div>
-              <div>
-                <span className="patient-name">Selin K.</span>
-                <span className="patient-service">Diş Beyazlatma</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="testimonial-card glass">
-            <div className="rating">⭐⭐⭐⭐⭐</div>
-            <p className="comment">"Kanal tedavisi korkumu bu klinik sayesinde yendim. Hiç acı hissetmedim, doktorlar çok ilgili."</p>
-            <div className="patient-info">
-              <div className="patient-avatar">M</div>
-              <div>
-                <span className="patient-name">Murat B.</span>
-                <span className="patient-service">Kanal Tedavisi</span>
-              </div>
-            </div>
-          </div>
+            ))
+          ) : (
+            <p className="no-reviews">Henüz 5 yıldızlı yorum bulunmuyor.</p>
+          )}
         </div>
       </section>
     </div>
