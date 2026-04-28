@@ -1,9 +1,16 @@
 // src/components/WhatsAppButton.tsx
 'use client';
 
+import { usePathname } from 'next/navigation';
 import './WhatsAppButton.css';
 
 const WhatsAppButton = () => {
+  const pathname = usePathname();
+  
+  if (pathname.startsWith('/doctor') || pathname.startsWith('/profile') || pathname.startsWith('/admin')) {
+    return null;
+  }
+
   const phoneNumber = '905464734063'; // Format: country code + number
   const message = encodeURIComponent('Merhaba, GingivaX üzerinden randevu hakkında bilgi almak istiyorum.');
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
