@@ -55,6 +55,18 @@ export async function createAppointment(formData: {
       const doc = await prisma.user.findUnique({ where: { id: formData.doctorId }, select: { name: true } });
       if (doc) finalDoctorName = doc.name || "Hekim";
     }
+    
+    if (formData.doctorId) {
+      const { createNotification } = await import("@/app/actions/notification");
+      const patientName = formData.name || session?.user?.name || "Bir hasta";
+      await createNotification(
+        formData.doctorId,
+        "Yeni Randevu Talebi 📅",
+        `${patientName}, ${formData.date} ${formData.time} tarihi için randevu oluşturdu.`,
+        "APPOINTMENT",
+        "/doctor"
+      );
+    }
 
     if (session?.user?.email) {
       await sendEmail({

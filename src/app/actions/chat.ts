@@ -23,6 +23,15 @@ export async function sendMessage(receiverId: string, content: string) {
       },
     });
 
+    const { createNotification } = await import("@/app/actions/notification");
+    await createNotification(
+      receiverId,
+      "Yeni Mesaj 💬",
+      `${(session.user as any).name || 'Bir kullanıcı'} size yeni bir mesaj gönderdi.`,
+      "MESSAGE",
+      "/doctor" // or wherever messages are viewed
+    );
+
     revalidatePath('/doctor');
     return { success: true, message };
   } catch (error) {
