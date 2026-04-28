@@ -7,7 +7,7 @@ import './WhatsAppButton.css';
 const WhatsAppButton = () => {
   const pathname = usePathname();
   
-  if (pathname.startsWith('/doctor') || pathname.startsWith('/profile') || pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/doctor') || pathname.startsWith('/profile') || pathname.startsWith('/admin') || pathname.startsWith('/hekimlerimiz')) {
     return null;
   }
 
