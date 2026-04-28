@@ -36,6 +36,7 @@ model User {
   offDates            OffDate[]
   reviews             Review[]      @relation("PatientReviews")
   doctorReviews       Review[]      @relation("DoctorReviews")
+  notifications       Notification[]
 }
 
 model VerificationToken {
@@ -124,4 +125,16 @@ model Review {
   doctorId      String
   appointment   Appointment @relation(fields: [appointmentId], references: [id])
   appointmentId Int         @unique
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   @default("INFO") // INFO, APPOINTMENT, MESSAGE
+  link      String?
+  createdAt DateTime @default(now())
 }

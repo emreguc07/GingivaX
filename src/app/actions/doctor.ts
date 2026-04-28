@@ -78,7 +78,7 @@ export async function updateAppointmentStatus(id: number, status: string) {
     where: whereClause,
     data: { status },
     include: {
-      user: { select: { email: true, name: true } },
+      user: { select: { id: true, email: true, name: true } },
       doctor: { select: { name: true } }
     }
   });
@@ -97,6 +97,22 @@ export async function updateAppointmentStatus(id: number, status: string) {
         doctor: (updated as any).doctor?.name || (session.user as any).name
       }
     });
+  }
+
+  if (updated.user?.id) {
+    const { createNotification } = await import("@/app/actions/notification");
+    let title = "Randevu Durumu Güncellendi";
+    let message = `Randevunuzun durumu '${status}' olarak güncellendi.`;
+    
+    if (status === 'Onaylandı') {
+      title = "Randevunuz Onaylandı 🔔";
+      message = `${updated.date} ${updated.time} tarihli randevunuz hekim tarafından onaylanmıştır.`;
+    } else if (status === 'İptal Edildi') {
+      title = "Randevunuz İptal Edildi ❌";
+      message = `${updated.date} ${updated.time} tarihli randevunuz iptal edilmiştir.`;
+    }
+    
+    await createNotification(updated.user.id, title, message, "APPOINTMENT", "/profile");
   }
 
   return updated;

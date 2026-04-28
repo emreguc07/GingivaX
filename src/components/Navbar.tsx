@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import MessageBadge from './MessageBadge';
+import NotificationBell from './NotificationBell';
 import { smoothScrollTo } from '@/lib/utils';
 import './Navbar.css';
 
@@ -67,6 +68,7 @@ const Navbar = () => {
               <div className="auth-section-nav">
                 {session ? (
                   <div className="user-nav">
+                    <NotificationBell />
                     <Link href="/profile" className="user-profile-link" onClick={closeMenu}>
                       <span className="user-name">{session?.user?.name}</span>
                     </Link>
