@@ -63,7 +63,6 @@ const Navbar = () => {
               <Link href="/" onClick={(e) => handleSamePageClick(e, '/')}>Ana Sayfa</Link>
               <Link href="/#hizmetler" onClick={e => { handleNavClick(e, '/#hizmetler'); closeMenu(); }}>Hizmetler</Link>
               <Link href="/hekimlerimiz" onClick={(e) => handleSamePageClick(e, '/hekimlerimiz')}>Hekimlerimiz</Link>
-              <Link href="/#hakkimizda" onClick={e => { handleNavClick(e, '/#hakkimizda'); closeMenu(); }}>Hakkımızda</Link>
               
               {(session?.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin" className="doctor-link admin-btn" style={{borderColor: 'gold', color: 'gold'}} onClick={closeMenu}>Admin Panel</Link>
