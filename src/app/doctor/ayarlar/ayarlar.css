@@ -34,7 +34,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: white;
+  background: var(--surface);
   border-radius: 16px;
   border: 1px solid var(--border);
 }
@@ -54,6 +54,8 @@
   padding: 0.4rem;
   border-radius: 8px;
   border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
 }
 
 .day-toggle {
@@ -81,6 +83,8 @@
   padding: 0.8rem;
   border-radius: 12px;
   border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
 }
 
 .off-dates-list {
@@ -94,8 +98,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.6rem 1rem;
-  background: #f8d7da;
-  color: #721c24;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 50px;
   font-size: 0.85rem;
   font-weight: 700;
@@ -104,7 +109,7 @@
 .btn-remove-date {
   background: none;
   border: none;
-  color: #721c24;
+  color: inherit;
   cursor: pointer;
   font-size: 1.2rem;
   line-height: 1;
