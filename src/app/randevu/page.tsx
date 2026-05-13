@@ -153,7 +153,7 @@ function BookingContent() {
             </ul>
             <div className="clinic-mini-card">
               <p>📍 Cumhuriyet Cad. No:123</p>
-              <p>📞 +90 555 123 45 67</p>
+              <p>📞 +90 546 473 40 63</p>
             </div>
           </div>
 
