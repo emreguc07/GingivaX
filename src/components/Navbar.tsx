@@ -26,11 +26,19 @@ const Navbar = () => {
     }
   };
 
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    closeMenu();
+  };
+
   return (
     <nav className={`navbar glass ${isMenuOpen ? 'is-open' : ''}`}>
       <div className="container navbar-content">
         {/* LOGO */}
-        <Link href="/" className="logo-section" onClick={closeMenu}>
+        <Link href="/" className="logo-section" onClick={handleLogoClick}>
           <div className="logo-wrapper">
              <img src="/logo.png" alt="GingivaX Logo" width={32} height={32} className="logo-img" />
           </div>
@@ -52,6 +60,7 @@ const Navbar = () => {
 
             {/* NAVIGATION LINKS */}
             <div className="nav-links">
+              <Link href="/" onClick={handleLogoClick}>Ana Sayfa</Link>
               <Link href="/#hizmetler" onClick={e => { handleNavClick(e, '/#hizmetler'); closeMenu(); }}>Hizmetler</Link>
               <Link href="/hekimlerimiz" onClick={closeMenu}>Hekimlerimiz</Link>
               <Link href="/#hakkimizda" onClick={e => { handleNavClick(e, '/#hakkimizda'); closeMenu(); }}>Hakkımızda</Link>
