@@ -33,6 +33,22 @@ export async function getProfileData() {
     throw new Error("Kullanıcı bulunamadı.");
   }
 
+  const now = new Date();
+  const mappedAppointments = user.appointments.map(app => {
+    if (app.status === 'Bekliyor') {
+      try {
+        // Date format is assumed to be YYYY-MM-DD and time HH:mm
+        const appDateTime = new Date(`${app.date}T${app.time || '00:00'}`);
+        if (appDateTime < now) {
+          return { ...app, status: 'Zaman Aşımı' };
+        }
+      } catch (e) {
+        // Do nothing on parse error
+      }
+    }
+    return app;
+  });
+
   return {
     user: {
       name: user.name,
@@ -41,7 +57,7 @@ export async function getProfileData() {
       phone: user.phone,
       createdAt: user.createdAt,
     },
-    appointments: user.appointments
+    appointments: mappedAppointments
   };
 }
 

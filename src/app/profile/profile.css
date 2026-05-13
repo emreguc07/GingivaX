@@ -129,6 +129,7 @@
 .status-badge.onaylandı { background: #d4edda; color: #155724; }
 .status-badge.iptal-edildi { background: #f8d7da; color: #721c24; }
 .status-badge.tamamlandı { background: #e0f2fe; color: #0369a1; }
+.status-badge.zaman-aşımı { background: #e2e8f0; color: #475569; }
 
 .btn-review {
   background: var(--primary);
