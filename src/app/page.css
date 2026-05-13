@@ -75,7 +75,7 @@
 
 .service-card:hover {
   transform: translateY(-15px) scale(1.02);
-  background: white;
+  background: var(--surface);
   border-color: var(--primary);
   box-shadow: 0 20px 40px -10px rgba(0, 206, 209, 0.25);
 }
