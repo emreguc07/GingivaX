@@ -1,6 +1,6 @@
 :root {
-  --primary: #00ced1;
-  --primary-hover: #00b5b8;
+  --primary: #0d9488;
+  --primary-hover: #0f766e;
   --secondary: #2f4f4f;
   --background: #f8fdfd;
   --surface: #ffffff;
@@ -79,8 +79,8 @@ button {
 }
 
 .dark {
-  --primary: #00d1d1;
-  --primary-hover: #00e6e6;
+  --primary: #2dd4bf;
+  --primary-hover: #5eead4;
   --secondary: #a6f6f6;
   --background: #0f172a;
   --surface: #1e293b;
