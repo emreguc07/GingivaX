@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import MessageBadge from './MessageBadge';
 import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
 import { smoothScrollTo } from '@/lib/utils';
 import './Navbar.css';
 
@@ -63,6 +64,7 @@ const Navbar = () => {
               <Link href="/" onClick={(e) => handleSamePageClick(e, '/')}>Ana Sayfa</Link>
               <Link href="/#hizmetler" onClick={e => { handleNavClick(e, '/#hizmetler'); closeMenu(); }}>Hizmetler</Link>
               <Link href="/hekimlerimiz" onClick={(e) => handleSamePageClick(e, '/hekimlerimiz')}>Hekimlerimiz</Link>
+              <Link href="/blog" onClick={(e) => handleSamePageClick(e, '/blog')}>Sağlık Rehberi</Link>
               <Link href="/dr-perio" className="dr-perio-nav-link" onClick={(e) => handleSamePageClick(e, '/dr-perio')}>
                 Dr. Perio ✨
               </Link>
@@ -76,7 +78,8 @@ const Navbar = () => {
                 </Link>
               )}
               
-              <div className="auth-section-nav">
+              <div className="auth-section-nav" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <ThemeToggle />
                 {session ? (
                   <div className="user-nav">
                     <NotificationBell />

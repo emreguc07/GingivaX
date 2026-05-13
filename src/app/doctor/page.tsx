@@ -139,24 +139,45 @@ const DoctorDashboard = () => {
             <p>{isAdmin ? 'Tüm doktorların aktif randevuları.' : 'Bugünkü randevularınız ve klinik özeti.'}</p>
           </div>
           {!isAdmin && (
-            <button 
-              className="btn-settings-nav"
-              onClick={() => window.location.href = '/doctor/ayarlar'}
-              style={{
-                padding: '0.8rem 1.2rem',
-                borderRadius: '12px',
-                border: '1px solid var(--border)',
-                background: 'white',
-                cursor: 'pointer',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                transition: '0.3s'
-              }}
-            >
-              ⚙️ Ayarlar
-            </button>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                className="btn-settings-nav"
+                onClick={() => window.location.href = '/doctor/blog'}
+                style={{
+                  padding: '0.8rem 1.2rem',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--primary)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: '0.3s'
+                }}
+              >
+                📝 Makalelerim
+              </button>
+              <button 
+                className="btn-settings-nav"
+                onClick={() => window.location.href = '/doctor/ayarlar'}
+                style={{
+                  padding: '0.8rem 1.2rem',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  background: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: '0.3s'
+                }}
+              >
+                ⚙️ Ayarlar
+              </button>
+            </div>
           )}
         </div>
         <div className="stats-row">
