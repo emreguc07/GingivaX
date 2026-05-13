@@ -17,8 +17,9 @@ export async function getAppointments() {
   const userRole = (session.user as any).role;
   const userId = (session.user as any).id;
 
+  let appointments;
   if (userRole === 'ADMIN') {
-    return await prisma.appointment.findMany({
+    appointments = await prisma.appointment.findMany({
       select: {
         id: true,
         service: true,
@@ -33,28 +34,41 @@ export async function getAppointments() {
       },
       orderBy: { createdAt: 'desc' }
     });
+  } else {
+    appointments = await prisma.appointment.findMany({
+      where: { doctorId: userId },
+      select: {
+        id: true,
+        service: true,
+        date: true,
+        time: true,
+        status: true,
+        name: true,
+        imageUrl: true,
+        userId: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
   }
 
-  return await prisma.appointment.findMany({
-    where: { doctorId: userId },
-    select: {
-      id: true,
-      service: true,
-      date: true,
-      time: true,
-      status: true,
-      name: true,
-      imageUrl: true,
-      userId: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
+  const now = new Date();
+  return appointments.map((app: any) => {
+    if (app.status === 'Bekliyor') {
+      try {
+        const appDateTime = new Date(`${app.date}T${app.time || '00:00'}`);
+        if (appDateTime < now) {
+          return { ...app, status: 'Zaman Aşımı' };
         }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
+      } catch (e) {}
+    }
+    return app;
   });
 }
 
@@ -169,7 +183,21 @@ export async function getPatientsByDoctor() {
     }
   });
 
-  return patients;
+  const now = new Date();
+  return patients.map(p => ({
+    ...p,
+    appointments: p.appointments.map((app: any) => {
+      if (app.status === 'Bekliyor') {
+        try {
+          const appDateTime = new Date(`${app.date}T${app.time || '00:00'}`);
+          if (appDateTime < now) {
+            return { ...app, status: 'Zaman Aşımı' };
+          }
+        } catch (e) {}
+      }
+      return app;
+    })
+  }));
 }
 
 export async function saveClinicalNote(appointmentId: number, note: string) {

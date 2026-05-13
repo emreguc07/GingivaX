@@ -289,7 +289,7 @@ const DoctorDashboard = () => {
                                 }
                               }}>Tamamla</button>
                             )}
-                            {app.status !== 'İptal Edildi' && app.status !== 'Tamamlandı' && (
+                            {app.status !== 'İptal Edildi' && app.status !== 'Tamamlandı' && app.status !== 'Zaman Aşımı' && (
                               <button className="btn-sm cancel" onClick={() => {
                                 if(confirm("Bu randevuyu iptal etmek istediğinize emin misiniz?")) {
                                   updateStatus(app.id, 'İptal Edildi');
@@ -530,6 +530,7 @@ const DoctorDashboard = () => {
         .status-badge.onaylandı { background: #d4edda; color: #155724; }
          .status-badge.tamamlandı { background: #e0f2fe; color: #0369a1; }
         .status-badge.iptal-edildi { background: #fef2f2; color: #b91c1c; }
+        .status-badge.zaman-aşımı { background: #e2e8f0; color: #475569; }
         .action-btns { display: flex; gap: 0.5rem; }
         .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 8px; border: none; cursor: pointer; transition: 0.3s; }
         .btn-sm:hover { opacity: 0.8; transform: translateY(-1px); }
