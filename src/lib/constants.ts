@@ -11,7 +11,7 @@ export const SERVICES = [
   { 
     id: 'radyoloji', 
     name: 'Ağız, Diş ve Çene Radyolojisi', 
-    icon: '🩻', 
+    icon: '📷', 
     description: 'Dijital röntgen ve 3 boyutlu dental tomografi ile kesin teşhis.',
     longDescription: 'Kliniğimizdeki gelişmiş 3D Tomografi cihazları sayesinde tüm ağız içi hastalıkları milimetrik olarak tespit ediyor ve tedavi planlıyoruz.'
   },
