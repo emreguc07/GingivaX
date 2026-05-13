@@ -2,59 +2,59 @@
 
 export const SERVICES = [
   { 
-    id: 'implant', 
-    name: 'İmplant Tedavisi', 
-    icon: '🦷', 
-    description: 'Eksik dişlerinizi en doğal ve sağlam şekilde tamamlıyoruz.',
-    longDescription: 'Yüksek kaliteli titanyum implantlar ve uzman cerrahi ekibimizle kalıcı çözümler sunuyoruz.'
+    id: 'cerrahi', 
+    name: 'Ağız, Diş ve Çene Cerrahisi', 
+    icon: '🏥', 
+    description: 'Gömülü diş çekimi, çene kistleri ve cerrahi implant işlemleri.',
+    longDescription: 'Uzman çene cerrahlarımızla gömülü yirmi yaş dişleri, çene kistleri, kemik tozu ekleme ve ileri düzey implant operasyonlarını güvenle gerçekleştiriyoruz.'
   },
   { 
-    id: 'whitening', 
-    name: 'Diş Beyazlatma', 
-    icon: '✨', 
-    description: 'Daha parlak ve estetik bir gülüşe sadece bir seansta kavuşun.',
-    longDescription: 'Lazer destekli beyazlatma sistemimizle dişlerinizi birkaç ton açarak size bembeyaz bir gülüş kazandırıyoruz.'
+    id: 'radyoloji', 
+    name: 'Ağız, Diş ve Çene Radyolojisi', 
+    icon: '🩻', 
+    description: 'Dijital röntgen ve 3 boyutlu dental tomografi ile kesin teşhis.',
+    longDescription: 'Kliniğimizdeki gelişmiş 3D Tomografi cihazları sayesinde tüm ağız içi hastalıkları milimetrik olarak tespit ediyor ve tedavi planlıyoruz.'
   },
   { 
-    id: 'checkup', 
-    name: 'Genel Muayene', 
-    icon: '🛡️', 
-    description: 'Düzenli kontrollerle diş sağlığınızı ömür boyu koruyun.',
-    longDescription: 'Detaylı dijital röntgen ve ağız içi tarama ile sorunları erkenden teşhis ediyoruz.'
+    id: 'endodonti', 
+    name: 'Endodonti', 
+    icon: '🔬', 
+    description: 'Mikroskop altında ağrısız ve hassas kanal tedavisi.',
+    longDescription: 'Ağrıyan veya enfekte olmuş dişlerinizi, özel endodonti mikroskopları kullanarak yüksek başarı oranıyla tedavi edip kurtarıyoruz.'
   },
   { 
-    id: 'ortho', 
+    id: 'ortodonti', 
     name: 'Ortodonti', 
     icon: '📏', 
-    description: 'Çapraşık dişleri tel veya şeffaf plaklarla hizalıyoruz.',
-    longDescription: 'Görünmez plaklar (Invisalign) veya klasik tel tedavileriyle diş diziliminizi düzeltiyoruz.'
+    description: 'Şeffaf plak veya tellerle çapraşık dişlerin düzeltilmesi.',
+    longDescription: 'Her yaş grubuna uygun olarak, görünmez plaklar (Invisalign) veya klasik tel tedavisi ile mükemmel bir gülüş ve doğru kapanış sağlıyoruz.'
   },
   { 
-    id: 'root-canal', 
-    name: 'Kanal Tedavisi', 
-    icon: '🔬', 
-    description: 'Ağrılı ve enfekte dişleri kurtarmak için uzman çözümler.',
-    longDescription: 'Modern endodontik cihazlarla ağrısız ve hızlı kanal tedavisi uyguluyoruz.'
+    id: 'pedodonti', 
+    name: 'Pedodonti', 
+    icon: '🧸', 
+    description: '0-15 yaş arası çocukların ağız ve diş sağlığı tedavileri.',
+    longDescription: 'Çocuklara özel tasarlanmış ünitemizde, diş hekimi korkusu oluşturmadan süt dişi ve daimi diş tedavilerini eğlenceli hale getiriyoruz.'
   },
   { 
-    id: 'filling', 
-    name: 'Estetik Dolgu', 
-    icon: '💎', 
-    description: 'Diş renginde, belli olmayan dayanıklı kompozit dolgular.',
-    longDescription: 'Çürükleri temizleyip dişin doğal formuna uygun estetik restorasyonlar yapıyoruz.'
-  },
-  { 
-    id: 'cleaning', 
-    name: 'Diş Temizliği', 
+    id: 'periodontoloji', 
+    name: 'Periodontoloji', 
     icon: '🧼', 
-    description: 'Tartar ve plak temizliği ile diş eti sağlığınızı koruyun.',
-    longDescription: 'Ultrasonik temizleyiciler ve hava akışı (airflow) teknolojisiyle derinlemesine temizlik.'
+    description: 'Diş eti hastalıkları ve diş eti çekilmelerinin tedavisi.',
+    longDescription: 'Diş eti kanamaları, diş taşı temizliği, diş eti çekilmeleri ve lazer destekli pembe estetik (diş eti boyu ayarlama) tedavileri uyguluyoruz.'
   },
   { 
-    id: 'veneer', 
-    name: 'Gülüş Tasarımı', 
-    icon: '🌟', 
-    description: 'Lamine veya zirkonyum kaplamalarla hayalinizdeki gülüş.',
-    longDescription: 'Yüz hattınıza uygun, dijital olarak tasarlanmış estetik porselen uygulamaları.'
+    id: 'protetik', 
+    name: 'Protetik Diş Tedavisi', 
+    icon: '💎', 
+    description: 'Zirkonyum, lamine ve implant üstü estetik protezler.',
+    longDescription: 'Kayıp dişlerin yerine veya estetik amaçla yapılan zirkonyum kaplamalar, e-max lamineler ve hassas bağlantılı protezlerle gülüşünüzü yeniliyoruz.'
+  },
+  { 
+    id: 'restoratif', 
+    name: 'Restoratif Diş Tedavisi', 
+    icon: '✨', 
+    description: 'Estetik kompozit dolgular ve diş beyazlatma işlemleri.',
+    longDescription: 'Dişlerdeki çürük, kırık veya renklenmeleri, dişin doğal formuna ve rengine en uygun biyouyumlu materyallerle estetik olarak restore ediyoruz.'
   }
 ];
