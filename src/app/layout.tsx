@@ -7,6 +7,7 @@ import { Providers } from "@/components/Providers";
 
 import DrPerioBot from "@/components/DrPerioBot";
 import ScrollToTop from "@/components/ScrollToTop";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "GingivaX | Premium Diş Kliniği & Randevu Sistemi",
@@ -27,6 +28,7 @@ export default function RootLayout({
           <main style={{ marginTop: '80px', flex: 1 }}>
             {children}
           </main>
+          <ThemeToggle />
           <WhatsAppButton />
           <DrPerioBot />
           <Footer />

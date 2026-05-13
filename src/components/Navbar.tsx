@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import MessageBadge from './MessageBadge';
 import NotificationBell from './NotificationBell';
-import ThemeToggle from './ThemeToggle';
 import { smoothScrollTo } from '@/lib/utils';
 import './Navbar.css';
 
@@ -79,7 +78,6 @@ const Navbar = () => {
               )}
               
               <div className="auth-section-nav" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <ThemeToggle />
                 {session ? (
                   <div className="user-nav">
                     <NotificationBell />
