@@ -1,10 +1,14 @@
 // src/lib/utils.ts
 
 export const smoothScrollTo = (targetId: string, duration: number = 1000) => {
-  const target = document.getElementById(targetId);
-  if (!target) return;
+  let targetPosition = 0;
 
-  const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - 100; // 100 is offset
+  if (targetId !== 'top') {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    targetPosition = target.getBoundingClientRect().top + window.pageYOffset - 100; // 100 is offset
+  }
+
   const startPosition = window.pageYOffset;
   const distance = targetPosition - startPosition;
   let startTime: number | null = null;
