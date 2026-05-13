@@ -5,7 +5,9 @@ import { Bell, Check, Trash2 } from 'lucide-react';
 import { 
   getUserNotifications, 
   markNotificationAsRead, 
-  markAllNotificationsAsRead 
+  markAllNotificationsAsRead,
+  deleteNotification,
+  deleteAllNotifications
 } from '@/app/actions/notification';
 
 export default function NotificationBell() {
