@@ -28,6 +28,8 @@ export default function DrPerioBot() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [showTooltip, setShowTooltip] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -35,6 +37,35 @@ export default function DrPerioBot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  // Occasional tooltip effect
+  useEffect(() => {
+    if (isOpen) {
+      setShowTooltip(false);
+      return;
+    }
+    
+    // Show tooltip 5 seconds after page load
+    const initialTimer = setTimeout(() => {
+      if (!isOpen) setShowTooltip(true);
+      
+      // Hide after 5 seconds
+      setTimeout(() => setShowTooltip(false), 5000);
+    }, 5000);
+
+    // Then show it randomly every 30-45 seconds
+    const interval = setInterval(() => {
+      if (!isOpen) {
+        setShowTooltip(true);
+        setTimeout(() => setShowTooltip(false), 5000);
+      }
+    }, 35000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [isOpen]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -144,14 +175,19 @@ export default function DrPerioBot() {
   return (
     <div className="perio-wrapper">
       {!isOpen && (
-        <button 
-          className="perio-toggle-btn" 
-          onClick={() => setIsOpen(true)}
-          aria-label="Dr. Perio ile sohbet et"
-          style={{ padding: 0, overflow: 'hidden' }}
-        >
-          <img src="/dr-perio.png" alt="Dr. Perio" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </button>
+        <div style={{ position: 'relative' }}>
+          <div className={`perio-bubble-tooltip ${showTooltip ? 'visible' : ''}`}>
+            Merhaba! Bana sormak istediğin bir şey var mı?
+          </div>
+          <button 
+            className="perio-toggle-btn" 
+            onClick={() => setIsOpen(true)}
+            aria-label="Dr. Perio ile sohbet et"
+            style={{ padding: 0, overflow: 'hidden' }}
+          >
+            <img src="/dr-perio.png" alt="Dr. Perio" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </button>
+        </div>
       )}
 
       {isOpen && (
