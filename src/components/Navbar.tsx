@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import MessageBadge from './MessageBadge';
 import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
 import { smoothScrollTo } from '@/lib/utils';
 import './Navbar.css';
 
@@ -77,9 +78,10 @@ const Navbar = () => {
                 </Link>
               )}
               
-              <div className="auth-section-nav" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="auth-section-nav" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <ThemeToggle />
                 {session ? (
-                  <div className="user-nav">
+                  <div className="user-nav" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <NotificationBell />
                     <Link href="/profile" className="user-profile-link" onClick={closeMenu}>
                       <span className="user-name">{session?.user?.name}</span>
@@ -92,7 +94,7 @@ const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="auth-links">
+                  <div className="auth-links" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <Link href="/login" className="login-link" onClick={closeMenu}>Giriş</Link>
                     <Link href="/register" className="btn-primary btn-sm" onClick={closeMenu}>Kaydol</Link>
                   </div>
