@@ -148,8 +148,9 @@ export default function DrPerioBot() {
           className="perio-toggle-btn" 
           onClick={() => setIsOpen(true)}
           aria-label="Dr. Perio ile sohbet et"
+          style={{ padding: 0, overflow: 'hidden' }}
         >
-          <Sparkles size={28} />
+          <img src="/dr-perio.png" alt="Dr. Perio" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </button>
       )}
 
@@ -157,8 +158,8 @@ export default function DrPerioBot() {
         <div className="perio-chat-window">
           <div className="perio-header">
             <div className="perio-header-info">
-              <div className="perio-avatar">
-                <Sparkles size={20} />
+              <div className="perio-avatar" style={{ padding: 0, overflow: 'hidden' }}>
+                <img src="/dr-perio.png" alt="Dr. Perio" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
                 <h3>Dr. Perio</h3>
