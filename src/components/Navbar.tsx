@@ -61,7 +61,7 @@ const Navbar = () => {
 
             {/* NAVIGATION LINKS */}
             <div className="nav-links">
-              <Link href="/" onClick={(e) => handleSamePageClick(e, '/')}>Ana Sayfa</Link>
+              <Link href="/" className="desktop-hide-link" onClick={(e) => handleSamePageClick(e, '/')}>Ana Sayfa</Link>
               <Link href="/#hizmetler" onClick={e => { handleNavClick(e, '/#hizmetler'); closeMenu(); }}>Hizmetler</Link>
               <Link href="/hekimlerimiz" onClick={(e) => handleSamePageClick(e, '/hekimlerimiz')}>Hekimlerimiz</Link>
               <Link href="/blog" onClick={(e) => handleSamePageClick(e, '/blog')}>Sağlık Rehberi</Link>
@@ -70,11 +70,11 @@ const Navbar = () => {
               </Link>
               
               {(session?.user as any)?.role === 'ADMIN' && (
-                <Link href="/admin" className="doctor-link admin-btn" style={{borderColor: 'gold', color: 'gold'}} onClick={closeMenu}>Admin Panel</Link>
+                <Link href="/admin" className="doctor-link admin-btn" style={{borderColor: 'gold', color: 'gold'}} onClick={closeMenu}>Admin</Link>
               )}
               {((session?.user as any)?.role === 'DOCTOR' || (session?.user as any)?.role === 'ADMIN') && (
                 <Link href="/doctor" className="doctor-link flex items-center gap-1" onClick={closeMenu}>
-                  Doktor Paneli <MessageBadge />
+                  Doktor <MessageBadge />
                 </Link>
               )}
               
