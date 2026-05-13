@@ -100,3 +100,48 @@ export async function createNotification(userId: string, title: string, message:
     return { success: false, error: 'Failed to create notification' };
   }
 }
+
+export async function deleteNotification(id: string) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    await prisma.notification.delete({
+      where: { id }
+    });
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    return { success: false, error: 'Failed to delete notification' };
+  }
+}
+
+export async function deleteAllNotifications() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) return { success: false, error: 'User not found' };
+
+    await prisma.notification.deleteMany({
+      where: { userId: user.id }
+    });
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting all notifications:', error);
+    return { success: false, error: 'Failed to delete all notifications' };
+  }
+}

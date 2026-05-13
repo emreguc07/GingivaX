@@ -52,6 +52,19 @@ export default function NotificationBell() {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
+  const handleDeleteNotification = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    await deleteNotification(id);
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    if (confirm("Tüm bildirimleri silmek istediğinize emin misiniz?")) {
+      await deleteAllNotifications();
+      setNotifications([]);
+    }
+  };
+
   const handleNotificationClick = (notification: any) => {
     if (!notification.isRead) {
       handleMarkAsRead(notification.id);
@@ -106,19 +119,35 @@ export default function NotificationBell() {
                       })}
                     </span>
                   </div>
-                  {!notification.isRead && (
+                  <div className="notification-actions">
+                    {!notification.isRead && (
+                      <button 
+                        className="mark-read-single-btn" 
+                        onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }}
+                        title="Okundu olarak işaretle"
+                      >
+                        <span className="read-dot"></span>
+                      </button>
+                    )}
                     <button 
-                      className="mark-read-single-btn" 
-                      onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }}
-                      title="Okundu olarak işaretle"
+                      className="delete-single-btn" 
+                      onClick={(e) => handleDeleteNotification(e, notification.id)}
+                      title="Bildirimi sil"
                     >
-                      <span className="read-dot"></span>
+                      <Trash2 size={14} />
                     </button>
-                  )}
+                  </div>
                 </div>
               ))
             )}
           </div>
+          {notifications.length > 0 && (
+            <div className="notification-footer">
+              <button onClick={handleDeleteAllNotifications} className="delete-all-btn">
+                <Trash2 size={14} /> Tümünü Sil
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

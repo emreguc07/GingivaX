@@ -260,6 +260,59 @@
   display: inline-block;
 }
 
+.notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.delete-single-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+.delete-single-btn:hover {
+  opacity: 1;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+
+.notification-footer {
+  padding: 0.8rem 1rem;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  background: #f9fafb;
+  text-align: center;
+}
+
+.delete-all-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.delete-all-btn:hover {
+  background: #fef2f2;
+}
+
 /* PURE CSS MOBILE MENU LOGIC */
 .menu-checkbox {
   display: none;
