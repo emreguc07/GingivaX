@@ -245,3 +245,53 @@
     padding-top: 1.2rem;
   }
 }
+
+/* Dark Mode Overrides */
+.dark .auth-page {
+  background: var(--background);
+}
+
+.dark .auth-form-side {
+  background: var(--background);
+  border-left: 1px solid var(--border);
+}
+
+.dark .auth-card-modern {
+  background: var(--surface);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .input-modern {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.dark .input-modern:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 25px -5px rgba(45, 212, 191, 0.15);
+}
+
+.dark .auth-switch-modern {
+  border-top: 1px solid var(--border);
+}
+
+.dark .auth-error-modern {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .dark .auth-form-side {
+    background: transparent;
+  }
+  
+  .dark .auth-card-modern {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  }
+}
+
