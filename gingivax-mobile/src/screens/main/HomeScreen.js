@@ -14,7 +14,8 @@ import {
   Modal,
   Vibration,
   Animated,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Alert
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -36,7 +37,8 @@ import {
   RotateCcw,
   X,
   Clock,
-  Award
+  Award,
+  Check
 } from "lucide-react-native";
 import { getApiUrl, appointmentsApi } from "../../services/api";
 
@@ -83,6 +85,7 @@ export default function HomeScreen({ navigation }) {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tipIndex, setTipIndex] = useState(0);
+  const [userRole, setUserRole] = useState("USER");
 
   // Brushing Timer States
   const [timerVisible, setTimerVisible] = useState(false);
@@ -124,11 +127,62 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Onaylandı":
+        return { bg: "rgba(16, 185, 129, 0.1)", text: COLORS.approved || "#10b981" };
+      case "İptal Edildi":
+        return { bg: "rgba(239, 68, 68, 0.1)", text: COLORS.cancelled || "#ef4444" };
+      case "Zaman Aşımı":
+        return { bg: "rgba(107, 114, 128, 0.1)", text: COLORS.timeout || "#6b7280" };
+      default: // Bekliyor
+        return { bg: "rgba(245, 158, 11, 0.1)", text: COLORS.pending || "#f59e0b" };
+    }
+  };
+
+  const handleUpdateStatus = async (appointmentId, status) => {
+    let actionText = status === "Onaylandı" ? "onaylamak" : "iptal etmek";
+    Alert.alert(
+      "Randevu Güncelleme",
+      `Bu randevuyu ${actionText} istediğinize emin misiniz?`,
+      [
+        { text: "Vazgeç", style: "cancel" },
+        {
+          text: status === "Onaylandı" ? "Onayla" : "İptal Et",
+          style: status === "Onaylandı" ? "default" : "destructive",
+          onPress: async () => {
+            try {
+              const response = await appointmentsApi.updateAppointmentStatus(appointmentId, status);
+              if (response.success) {
+                // Update local list state
+                setAppointments(appointments.map(app => 
+                  app.id === appointmentId ? { ...app, status: status } : app
+                ));
+                Alert.alert("Başarılı", `Randevu başarıyla ${status.toLowerCase()}.`);
+              }
+            } catch (err) {
+              Alert.alert("Hata", err.message || "Randevu güncellenemedi.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const fetchHomeData = async () => {
     try {
       const userJson = await AsyncStorage.getItem("user");
       if (userJson) {
         const user = JSON.parse(userJson);
+        setUserRole(user.role || "USER");
         setUserName(user.name?.split(" ")[0] || "Hasta");
         
         const nameParts = user.name?.split(" ") || [];
@@ -396,6 +450,188 @@ export default function HomeScreen({ navigation }) {
       </Svg>
     );
   };
+
+  const renderDoctorDashboard = () => {
+    const todayStr = getTodayDateString();
+    const todayAppointments = appointments.filter(app => app.date === todayStr);
+    const pendingAppointments = appointments.filter(app => app.status === "Bekliyor");
+    const uniquePatients = new Set(appointments.map(app => app.userId).filter(Boolean)).size;
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        
+        {/* Background blobs */}
+        <View style={styles.decorOrb1} />
+        <View style={styles.decorOrb2} />
+
+        {/* Header Banner */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity 
+              style={[styles.avatarCircle, { backgroundColor: "rgba(0, 206, 209, 0.15)" }]}
+              onPress={() => navigation.navigate("Profile")}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.avatarText, { color: COLORS.primary }]}>{userInitials}</Text>
+            </TouchableOpacity>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.greeting}>Hoş Geldiniz,</Text>
+              <Text style={styles.nameText}>Dr. {userName} 👨‍⚕️</Text>
+            </View>
+          </View>
+          <View style={styles.headerRight}>
+            <Text style={styles.logoText}>Gingiva<Text style={styles.logoAccent}>X</Text></Text>
+          </View>
+        </View>
+
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Brand Badge */}
+          <View style={styles.badgeContainer}>
+            <Text style={styles.badgeText}>HEKİM KONTROL PANELİ</Text>
+          </View>
+
+          {/* Stats Overview */}
+          <View style={styles.statsGrid}>
+            <LinearGradient
+              colors={["rgba(0, 206, 209, 0.15)", "rgba(0, 206, 209, 0.02)"]}
+              style={styles.statCard}
+            >
+              <Calendar size={20} color={COLORS.primary} style={{ marginBottom: 6 }} />
+              <Text style={styles.statNumber}>{todayAppointments.length}</Text>
+              <Text style={styles.statLabel}>Bugünkü Randevular</Text>
+            </LinearGradient>
+
+            <LinearGradient
+              colors={["rgba(245, 158, 11, 0.15)", "rgba(245, 158, 11, 0.02)"]}
+              style={styles.statCard}
+            >
+              <Clock size={20} color="#f59e0b" style={{ marginBottom: 6 }} />
+              <Text style={[styles.statNumber, { color: "#f59e0b" }]}>{pendingAppointments.length}</Text>
+              <Text style={styles.statLabel}>Bekleyen Onaylar</Text>
+            </LinearGradient>
+
+            <LinearGradient
+              colors={["rgba(16, 185, 129, 0.15)", "rgba(16, 185, 129, 0.02)"]}
+              style={styles.statCard}
+            >
+              <User size={20} color="#10b981" style={{ marginBottom: 6 }} />
+              <Text style={[styles.statNumber, { color: "#10b981" }]}>{uniquePatients}</Text>
+              <Text style={styles.statLabel}>Toplam Hasta</Text>
+            </LinearGradient>
+          </View>
+
+          {/* Today's Schedule or Pending */}
+          <Text style={styles.sectionTitle}>
+            {todayAppointments.length > 0 ? "Bugünün Randevuları" : "Bekleyen Randevu İstekleri"}
+          </Text>
+
+          {/* List Appointments */}
+          {(todayAppointments.length > 0 ? todayAppointments : pendingAppointments).length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Calendar size={32} color={COLORS.textMuted} style={{ marginBottom: 8 }} />
+              <Text style={styles.emptyText}>Bekleyen veya planlanmış randevu bulunmuyor.</Text>
+            </View>
+          ) : (
+            (todayAppointments.length > 0 ? todayAppointments : pendingAppointments).slice(0, 5).map((app) => {
+              const statusStyle = getStatusStyle(app.status);
+              return (
+                <View key={app.id} style={styles.doctorAppCard}>
+                  <View style={styles.doctorAppCardHeader}>
+                    <Text style={styles.doctorAppService}>{app.service}</Text>
+                    <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
+                      <Text style={[styles.statusText, { color: statusStyle.text }]}>{app.status}</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.doctorAppDetails}>
+                    <View style={styles.doctorAppDetailRow}>
+                      <Clock size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
+                      <Text style={styles.doctorAppDetailValue}>{app.date} @ {app.time}</Text>
+                    </View>
+                    <View style={styles.doctorAppDetailRow}>
+                      <User size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
+                      <Text style={styles.doctorAppDetailValue}>Hasta: {app.user?.name || app.name || "Anonim"}</Text>
+                    </View>
+                  </View>
+
+                  {app.status === "Bekliyor" && (
+                    <View style={styles.doctorAppActions}>
+                      <TouchableOpacity 
+                        style={[styles.doctorAppBtn, styles.doctorApproveBtn]}
+                        onPress={() => handleUpdateStatus(app.id, "Onaylandı")}
+                      >
+                        <Check size={14} color="#ffffff" style={{ marginRight: 4 }} />
+                        <Text style={styles.doctorAppBtnText}>Onayla</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity 
+                        style={[styles.doctorAppBtn, styles.doctorCancelBtn]}
+                        onPress={() => handleUpdateStatus(app.id, "İptal Edildi")}
+                      >
+                        <X size={14} color="#ffffff" style={{ marginRight: 4 }} />
+                        <Text style={styles.doctorAppBtnText}>İptal Et</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              );
+            })
+          )}
+
+          {/* Quick Actions Shortcuts */}
+          <Text style={styles.sectionTitle}>Hızlı Kısayollar</Text>
+          
+          <ScaleButton 
+            style={styles.shortcutCard}
+            onPress={() => navigation.navigate("ChatTab")}
+          >
+            <LinearGradient
+              colors={["rgba(14, 27, 27, 0.82)", "rgba(22, 45, 45, 0.42)"]}
+              style={styles.shortcutCardGradient}
+            >
+              <View style={styles.shortcutContent}>
+                <View style={[styles.iconBg, { backgroundColor: "rgba(0, 206, 209, 0.08)", marginBottom: 0 }]}>
+                  <MessageSquare size={22} color={COLORS.primary} />
+                </View>
+                <View style={styles.shortcutTextContainer}>
+                  <Text style={styles.shortcutTitle}>Hastalarla Sohbet</Text>
+                  <Text style={styles.shortcutDesc}>Hasta sorularını yanıtlayın ve sohbet edin</Text>
+                </View>
+              </View>
+              <ChevronRight size={18} color={COLORS.textSecondary} />
+            </LinearGradient>
+          </ScaleButton>
+
+          <ScaleButton 
+            style={styles.shortcutCard}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <LinearGradient
+              colors={["rgba(14, 27, 27, 0.82)", "rgba(22, 45, 45, 0.42)"]}
+              style={styles.shortcutCardGradient}
+            >
+              <View style={styles.shortcutContent}>
+                <View style={[styles.iconBg, { backgroundColor: "rgba(0, 206, 209, 0.08)", marginBottom: 0 }]}>
+                  <Calendar size={22} color={COLORS.primary} />
+                </View>
+                <View style={styles.shortcutTextContainer}>
+                  <Text style={styles.shortcutTitle}>Hekim Profili</Text>
+                  <Text style={styles.shortcutDesc}>Randevu takviminizi ve profil bilgilerinizi düzenleyin</Text>
+                </View>
+              </View>
+              <ChevronRight size={18} color={COLORS.textSecondary} />
+            </LinearGradient>
+          </ScaleButton>
+
+        </ScrollView>
+      </SafeAreaView>
+    );
+  };
+
+  if (userRole === "DOCTOR") {
+    return renderDoctorDashboard();
+  }
 
   // Filter for upcoming active appointments
   const upcomingAppointment = appointments
@@ -1343,5 +1579,142 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "700",
+  },
+  statsGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: SPACING.lg,
+  },
+  statCard: {
+    width: "31%",
+    padding: SPACING.md,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: COLORS.glassBorder,
+    alignItems: "center",
+  },
+  statNumber: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: COLORS.primary,
+    marginBottom: 2,
+  },
+  statLabel: {
+    fontSize: 9.5,
+    color: COLORS.textSecondary,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  doctorAppCard: {
+    backgroundColor: COLORS.glass,
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  doctorAppCardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.05)",
+    paddingBottom: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  doctorAppService: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: COLORS.secondary,
+    flex: 1,
+    marginRight: 6,
+  },
+  doctorAppDetails: {
+    marginBottom: SPACING.xs,
+  },
+  doctorAppDetailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  doctorAppDetailValue: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  doctorAppActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255, 255, 255, 0.05)",
+    paddingTop: SPACING.sm,
+  },
+  doctorAppBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "48%",
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  doctorApproveBtn: {
+    backgroundColor: "#10b981",
+  },
+  doctorCancelBtn: {
+    backgroundColor: "#ef4444",
+  },
+  doctorAppBtnText: {
+    color: "#ffffff",
+    fontWeight: "700",
+    fontSize: 13,
+  },
+  shortcutCard: {
+    backgroundColor: "transparent",
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    marginBottom: SPACING.md,
+    overflow: "hidden",
+    ...SHADOWS.glass,
+  },
+  shortcutCardGradient: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: SPACING.md,
+    width: "100%",
+  },
+  shortcutContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  shortcutTextContainer: {
+    marginLeft: SPACING.md,
+    flex: 1,
+  },
+  shortcutTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: COLORS.secondary,
+  },
+  shortcutDesc: {
+    fontSize: 11.5,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  emptyCard: {
+    backgroundColor: COLORS.glass,
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    padding: SPACING.xl,
+    alignItems: "center",
+    marginBottom: SPACING.lg,
+  },
+  emptyText: {
+    color: COLORS.textSecondary,
+    textAlign: "center",
+    fontSize: 13,
   },
 });
