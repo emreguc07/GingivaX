@@ -186,9 +186,9 @@ export default function BookScreen({ navigation }) {
       });
 
       if (response.success) {
-        Alert.alert("Başarılı 🎉", "Randevunuz başarıyla oluşturuldu! Profilinizden takip edebilirsiniz.", [
+        Alert.alert("Randevunuz Alındı 🎉", "Randevunuz başarıyla oluşturuldu! Detayları profil sayfanızdan takip edebilirsiniz.", [
           { 
-            text: "Harika", 
+            text: "Tamam, Devam", 
             onPress: () => {
               // Reset state and redirect to Home or Profile
               setStep(1);
