@@ -37,6 +37,18 @@ export const setUserId = (id) => {
 };
 
 const request = async (path, options = {}) => {
+  if (!currentUserId) {
+    try {
+      const userJson = await AsyncStorage.getItem("user");
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        currentUserId = user.id;
+      }
+    } catch (e) {
+      console.error("Failed to recover currentUserId from AsyncStorage", e);
+    }
+  }
+
   const url = `${API_BASE_URL}${path}`;
   
   const headers = {
