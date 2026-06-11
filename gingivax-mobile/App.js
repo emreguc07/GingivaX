@@ -72,6 +72,14 @@ function MainTabNavigator() {
         }}
       >
         <Tab.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          options={{
+            tabBarLabel: "Ana Sayfa",
+            tabBarIcon: ({ color, size }) => <Home size={size - 2} color={color} />
+          }}
+        />
+        <Tab.Screen 
           name="ChatTab" 
           component={ChatScreen} 
           options={{
