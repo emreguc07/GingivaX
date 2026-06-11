@@ -174,3 +174,26 @@
     max-width: 200px;
   }
 }
+
+/* ==========================================
+   Koyu Tema (Dark Mode) Uyumluluk Kuralları
+   ========================================== */
+.dark .btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.dark .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Mobil/Tablet cihazlarda koyu modda yazılardaki beyaz bulanık gölgeleri sıfırlama */
+@media (max-width: 968px) {
+  .dark .hero h1,
+  .dark .hero p {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+}
