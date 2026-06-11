@@ -1,5 +1,6 @@
 // src/screens/main/BookScreen.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { 
   StyleSheet, 
   Text, 
@@ -81,20 +82,21 @@ export default function BookScreen({ navigation }) {
     "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
 
-  // Fetch doctors on mount
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const response = await doctorsApi.getDoctors();
-        if (response.success) {
-          setDoctors(response.doctors);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchDoctors = async () => {
+        try {
+          const response = await doctorsApi.getDoctors();
+          if (response.success) {
+            setDoctors(response.doctors);
+          }
+        } catch (err) {
+          console.error("Failed to load doctors", err);
         }
-      } catch (err) {
-        console.error("Failed to load doctors", err);
-      }
-    };
-    fetchDoctors();
-  }, []);
+      };
+      fetchDoctors();
+    }, [])
+  );
 
   // Fetch booked slots when doctor or date changes
   useEffect(() => {

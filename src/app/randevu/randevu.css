@@ -375,3 +375,115 @@
   .step-actions-row { flex-direction: column-reverse; gap: 1rem; }
   .btn-back { width: 100%; text-align: center; }
 }
+
+/* ==========================================
+   Dark Theme (Koyu Tema) Uyumluluk Kuralları
+   ========================================== */
+.dark .booking-layout {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6);
+}
+
+.dark .booking-sidebar {
+  background: linear-gradient(135deg, #111e1e, #0a1414);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dark .booking-main {
+  background: rgba(15, 23, 42, 0.85); /* Slate-900 transparent */
+}
+
+.dark .step-box h3 {
+  color: var(--secondary);
+}
+
+.dark .service-btn,
+.dark .doctor-option-btn,
+.dark .time-chip,
+.dark .summary-card,
+.dark .full-date-input,
+.dark .upload-section {
+  background: var(--surface); /* slate-800 */
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.dark .service-btn {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.dark .service-btn:hover,
+.dark .doctor-option-btn:hover {
+  border-color: var(--primary);
+  background: rgba(45, 212, 191, 0.08); /* primary color transparent */
+}
+
+.dark .time-chip:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: rgba(45, 212, 191, 0.08);
+}
+
+.dark .service-btn.selected,
+.dark .doctor-option-btn.selected,
+.dark .time-chip.selected {
+  background: var(--primary);
+  color: #0f172a !important; /* dark text for contrast */
+  border-color: var(--primary);
+}
+
+.dark .service-btn.selected .btn-label,
+.dark .doctor-option-btn.selected span {
+  color: #0f172a !important;
+}
+
+.dark .time-chip.booked {
+  background: #1e293b;
+  color: #64748b;
+  border-color: #334155;
+  opacity: 0.6;
+}
+
+.dark .summary-item {
+  border-bottom-color: var(--border);
+}
+
+.dark .summary-item label {
+  color: var(--text-muted);
+}
+
+.dark .summary-item span {
+  color: var(--text);
+}
+
+.dark .btn-back {
+  border-color: var(--border);
+  color: var(--text);
+  background: transparent;
+}
+
+.dark .btn-back:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .closed-warning {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.dark .closed-warning p {
+  color: #f87171;
+}
+
+.dark .file-input-custom {
+  color: var(--text);
+}
+
+.dark .success-view h3 {
+  color: var(--primary);
+}
+
+.dark .success-view p {
+  color: var(--text);
+}
+

@@ -1,5 +1,6 @@
 // src/screens/main/DoctorsScreen.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { 
   StyleSheet, 
   Text, 
@@ -76,9 +77,11 @@ export default function DoctorsScreen({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    fetchDoctors();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchDoctors();
+    }, [])
+  );
 
   const openDoctorDetails = (doctor) => {
     setSelectedDoctor(doctor);

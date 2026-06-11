@@ -45,10 +45,7 @@ export async function GET(req: Request) {
           },
           review: true
         },
-        orderBy: [
-          { date: "desc" },
-          { time: "desc" }
-        ]
+        orderBy: { createdAt: "desc" }
       });
     } else {
       appointments = await prisma.appointment.findMany({
@@ -59,10 +56,7 @@ export async function GET(req: Request) {
           },
           review: true
         },
-        orderBy: [
-          { date: "desc" },
-          { time: "desc" }
-        ]
+        orderBy: { createdAt: "desc" }
       });
     }
 

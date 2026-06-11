@@ -1,5 +1,6 @@
 // src/screens/main/ProfileScreen.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { 
   StyleSheet, 
   Text, 
@@ -30,34 +31,60 @@ export default function ProfileScreen({ navigation }) {
   
   const ITEMS_PER_PAGE = 3;
 
-  const fetchProfileAndAppointments = async () => {
-    setLoading(true);
+  // Profil bilgisini sadece ilk açılışta çek
+  const fetchProfile = async () => {
     try {
-      const [profileData, appData] = await Promise.all([
-        profileApi.getProfile(),
-        appointmentsApi.getAppointments()
-      ]);
-
+      const profileData = await profileApi.getProfile();
       if (profileData.success) {
         setUser(profileData.user);
         setName(profileData.user.name || "");
         setPhone(profileData.user.phone || "");
       }
-
-      if (appData.success) {
-        setAppointments(appData.appointments || []);
-        setCurrentPage(1);
-      }
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchProfileAndAppointments();
-  }, []);
+  // Sadece randevuları çek (polling için hafif)
+  const fetchAppointments = async () => {
+    try {
+      const appData = await appointmentsApi.getAppointments();
+      if (appData.success) {
+        setAppointments(appData.appointments || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Ekran odaklandığında profil + randevuları çek, ardından her 15sn'de randevuları güncelle
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+
+      const init = async () => {
+        setLoading(true);
+        try {
+          await Promise.all([fetchProfile(), fetchAppointments()]);
+          if (isMounted) setCurrentPage(1);
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      };
+
+      init();
+
+      // Anlık güncelleme: her 15 saniyede randevuları yenile
+      const interval = setInterval(() => {
+        if (isMounted) fetchAppointments();
+      }, 15000);
+
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    }, [])
+  );
 
   const handleUpdateProfile = async () => {
     if (!name.trim()) {
@@ -273,6 +300,70 @@ export default function ProfileScreen({ navigation }) {
               <View>
                 {paginatedAppointments.map((app) => {
                   const statusStyle = getStatusStyle(app.status);
+                  if (user?.role === "DOCTOR") {
+                    let formattedDate = app.date;
+                    try {
+                      const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+                      const parts = app.date.split("-");
+                      if (parts.length === 3) {
+                        formattedDate = `${parts[2]} ${months[parseInt(parts[1], 10) - 1]}`;
+                      }
+                    } catch (e) {}
+
+                    return (
+                      <View key={app.id} style={styles.doctorAppCardHorizontal}>
+                        {/* Left: Time and Date Badge */}
+                        <View style={styles.timeBadge}>
+                          <Text style={styles.timeText}>{app.time}</Text>
+                          <Text style={styles.dateText}>{formattedDate}</Text>
+                        </View>
+
+                        {/* Middle: Patient & Service & Contact */}
+                        <View style={styles.appInfo}>
+                          <Text style={styles.patientName}>{app.user?.name || app.name || "Anonim"}</Text>
+                          <Text style={styles.treatmentText}>{app.service}</Text>
+                          {(app.user?.phone || app.phone) && (
+                            <View style={styles.contactRow}>
+                              <Phone size={11} color={COLORS.textSecondary} style={{ marginRight: 6 }} />
+                              <Text style={styles.contactText}>{app.user?.phone || app.phone}</Text>
+                            </View>
+                          )}
+                          {(app.user?.email || app.email) && (
+                            <View style={styles.contactRow}>
+                              <Mail size={11} color={COLORS.textSecondary} style={{ marginRight: 6 }} />
+                              <Text style={styles.contactText}>{app.user?.email || app.email}</Text>
+                            </View>
+                          )}
+                        </View>
+
+                        {/* Right: Actions or Status */}
+                        <View style={styles.appActionWrapper}>
+                          {app.status === "Bekliyor" ? (
+                            <View style={styles.quickActionRow}>
+                              <TouchableOpacity 
+                                style={[styles.quickBtn, styles.quickApprove]}
+                                onPress={() => handleUpdateStatus(app.id, "Onaylandı")}
+                              >
+                                <Check size={14} color="#ffffff" />
+                              </TouchableOpacity>
+
+                              <TouchableOpacity 
+                                style={[styles.quickBtn, styles.quickCancel]}
+                                onPress={() => handleUpdateStatus(app.id, "İptal Edildi")}
+                              >
+                                <X size={14} color="#ffffff" />
+                              </TouchableOpacity>
+                            </View>
+                          ) : (
+                            <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg, minWidth: 80, alignItems: "center" }]}>
+                              <Text style={[styles.statusText, { color: statusStyle.text, fontSize: 10 }]}>{app.status}</Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                    );
+                  }
+
                   return (
                     <View key={app.id} style={styles.appCard}>
                       <View style={styles.appCardHeader}>
@@ -288,39 +379,12 @@ export default function ProfileScreen({ navigation }) {
                           <Text style={styles.appDetailValue}>{app.date} @ {app.time}</Text>
                         </View>
 
-                        {user?.role === "DOCTOR" ? (
-                          <>
-                            <View style={styles.appDetailRow}>
-                              <User size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
-                              <Text style={styles.appDetailValue}>
-                                Hasta: {app.user?.name || app.name || "Anonim"}
-                              </Text>
-                            </View>
-                            {(app.user?.phone || app.phone) && (
-                              <View style={styles.appDetailRow}>
-                                <Phone size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
-                                <Text style={styles.appDetailValue}>
-                                  Tel: {app.user?.phone || app.phone}
-                                </Text>
-                              </View>
-                            )}
-                            {(app.user?.email || app.email) && (
-                              <View style={styles.appDetailRow}>
-                                <Mail size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
-                                <Text style={styles.appDetailValue}>
-                                  E-posta: {app.user?.email || app.email}
-                                </Text>
-                              </View>
-                            )}
-                          </>
-                        ) : (
-                          <View style={styles.appDetailRow}>
-                            <User size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
-                            <Text style={styles.appDetailValue}>
-                              Hekim: {app.doctor?.name || "Atanıyor..."}
-                            </Text>
-                          </View>
-                        )}
+                        <View style={styles.appDetailRow}>
+                          <User size={14} color={COLORS.primary} style={{ marginRight: 6 }} />
+                          <Text style={styles.appDetailValue}>
+                            Hekim: {app.doctor?.name || "Atanıyor..."}
+                          </Text>
+                        </View>
                       </View>
 
                       {app.clinicalNote && (
@@ -330,26 +394,6 @@ export default function ProfileScreen({ navigation }) {
                             <Text style={styles.noteLabel}>Hekim Notu / Reçete:</Text>
                           </View>
                           <Text style={styles.noteValue}>{app.clinicalNote}</Text>
-                        </View>
-                      )}
-
-                      {user?.role === "DOCTOR" && app.status === "Bekliyor" && (
-                        <View style={styles.doctorActions}>
-                          <TouchableOpacity 
-                            style={[styles.docBtn, styles.docApproveBtn]} 
-                            onPress={() => handleUpdateStatus(app.id, "Onaylandı")}
-                          >
-                            <Check size={16} color="#ffffff" style={{ marginRight: 6 }} />
-                            <Text style={styles.docBtnText}>Onayla</Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity 
-                            style={[styles.docBtn, styles.docCancelBtn]} 
-                            onPress={() => handleUpdateStatus(app.id, "İptal Edildi")}
-                          >
-                            <X size={16} color="#ffffff" style={{ marginRight: 6 }} />
-                            <Text style={styles.docBtnText}>İptal Et</Text>
-                          </TouchableOpacity>
                         </View>
                       )}
                     </View>
@@ -704,5 +748,84 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "700",
     fontSize: 13,
+  },
+  doctorAppCardHorizontal: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.glass,
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1.5,
+    borderRadius: 20,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+    ...SHADOWS.glass,
+  },
+  timeBadge: {
+    width: 65,
+    height: 55,
+    borderRadius: 12,
+    backgroundColor: "rgba(0, 206, 209, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: SPACING.md,
+    borderWidth: 1,
+    borderColor: "rgba(0, 206, 209, 0.15)",
+  },
+  timeText: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: COLORS.primary,
+  },
+  dateText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  appInfo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  patientName: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: COLORS.secondary,
+  },
+  treatmentText: {
+    fontSize: 12.5,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  contactRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 3,
+  },
+  contactText: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+  },
+  appActionWrapper: {
+    marginLeft: SPACING.sm,
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  quickActionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  quickBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
+  quickApprove: {
+    backgroundColor: "#10b981",
+  },
+  quickCancel: {
+    backgroundColor: "#ef4444",
   },
 });

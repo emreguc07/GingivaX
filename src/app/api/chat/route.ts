@@ -18,32 +18,71 @@ Kesin bir tıbbi teşhis koymadığını, sadece muayene için ön bir yönlendi
 
 Cevaplarını kısa ve anlaşılır tut. Markdown formatını (kalın yazı, madde imleri vb.) kullanarak daha okunaklı hale getirebilirsin.`;
 
+function getStaticReply(message: string, hasImage: boolean): string {
+  const text = (message || "").toLowerCase();
+  let reply = "";
+  
+  if (text.includes("ağrı") || text.includes("agri") || text.includes("sızı") || text.includes("sizi") || text.includes("zonkla")) {
+    reply = "Geçmiş olsun! Diş ağrısı genellikle çürük, kanal tedavisi gereksinimi veya diş eti enfeksiyonu kaynaklı olabilir. En kısa sürede **Endodonti (Kanal Tedavisi)** veya **Restoratif Diş Tedavisi** uzmanımıza muayene olmanızı öneririm. Şiddetli ağrılarda hekim muayenesi olmadan antibiyotik kullanmayınız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else if (text.includes("tel") || text.includes("şeffaf") || text.includes("seffaf") || text.includes("yamuk") || text.includes("çapraşık") || text.includes("caprasik") || text.includes("ortodonti")) {
+    reply = "Dişlerdeki çapraşıklıklar ve dizilim sorunları için **Ortodonti** (Diş Teli ve Şeffaf Plak) bölümümüz hizmet vermektedir. Hekimimiz size en uygun tedavi yöntemini (telsiz şeffaf plaklar veya geleneksel braketler) sunacaktır. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else if (text.includes("diş eti") || text.includes("dis eti") || text.includes("kanama") || text.includes("şişlik") || text.includes("sislik") || text.includes("koku")) {
+    reply = "Diş eti kanaması, şişlik veya ağız kokusu genellikle diş eti hastalıklarının (Periodontitis/Gingivitis) belirtisidir. Diş taşı temizliği ve diş eti tedavileri için **Periodontoloji** birimimizden randevu almanızı öneririz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else if (text.includes("çekim") || text.includes("cekim") || text.includes("yirmilik") || text.includes("gömülü") || text.includes("gomulu") || text.includes("cerrahi")) {
+    reply = "Yirmilik diş ağrıları, gömülü diş operasyonları ve implant cerrahisi **Ağız, Diş ve Çene Cerrahisi** bölümümüzün uzmanlık alanıdır. Cerrahi muayene için randevunuzu online oluşturabilirsiniz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else if (text.includes("implant") || text.includes("zirkonyum") || text.includes("protez") || text.includes("kaplama") || text.includes("lamina")) {
+    reply = "Eksik dişlerin tamamlanması, zirkonyum kaplamalar, porselen laminalar ve gülüş tasarımı uygulamaları **Protetik Diş Tedavisi** uzmanlarımızın alanıdır. Size en estetik çözümleri sunmak için hazırız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else if (text.includes("çocuk") || text.includes("cocuk") || text.includes("bebek") || text.includes("pedodonti")) {
+    reply = "Çocuklarımızın süt dişi tedavileri, koruyucu dolgular (fissür örtücü) ve diş gelişim takipleri **Pedodonti (Çocuk Diş Hekimliği)** bölümümüz tarafından sevgiyle gerçekleştirilmektedir. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+  } else {
+    reply = "Merhaba! Ben GingivaX Akıllı Klinik Asistanı Dr. Perio. Şikayetinizi (örneğin ağrı, diş eti kanaması, diş teli, implant vb.) yazabilirseniz size en uygun tedavi birimimizi önerebilirim. Dilerseniz [buraya tıklayarak online randevunuzu](/randevu) hemen oluşturabilirsiniz.";
+  }
+
+  if (hasImage) {
+    reply = `**Not:** Yapay zeka servisimizdeki geçici yoğunluk nedeniyle fotoğraf analizi şu anda devre dışıdır, ancak şikayetinize göre size şu bilgiyi verebilirim:\n\n${reply}`;
+  }
+  return reply;
+}
+
+async function generateWithRetry(aiClient: any, userParts: any[], retries = 2, delayMs = 1000): Promise<string> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const response = await aiClient.models.generateContent({
+         model: 'gemini-2.5-flash',
+         contents: [
+           {
+             role: 'user',
+             parts: userParts
+           }
+         ],
+         config: {
+           systemInstruction: SYSTEM_INSTRUCTION
+         }
+      });
+      return response.text;
+    } catch (error: any) {
+      const isTemporary = error.status === 503 || error.status === 429 || 
+                          (error.message && (error.message.includes('503') || error.message.includes('429') || error.message.includes('overload') || error.message.includes('demand')));
+      
+      if (isTemporary && i < retries) {
+        console.warn(`Gemini API geçici hata verdi (status ${error.status || 'bilinmiyor'}), ${delayMs}ms içinde tekrar deneniyor... (Deneme ${i + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        delayMs *= 2;
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error("Yeniden denemeler başarısız oldu.");
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { message, image, mimeType } = body;
 
     if (!ai) {
-      const text = (message || "").toLowerCase();
-      let reply = "";
-      
-      if (text.includes("ağrı") || text.includes("agri") || text.includes("sızı") || text.includes("sizi") || text.includes("zonkla")) {
-        reply = "Geçmiş olsun! Diş ağrısı genellikle çürük, kanal tedavisi gereksinimi veya diş eti enfeksiyonu kaynaklı olabilir. En kısa sürede **Endodonti (Kanal Tedavisi)** veya **Restoratif Diş Tedavisi** uzmanımıza muayene olmanızı öneririm. Şiddetli ağrılarda hekim muayenesi olmadan antibiyotik kullanmayınız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else if (text.includes("tel") || text.includes("şeffaf") || text.includes("seffaf") || text.includes("yamuk") || text.includes("çapraşık") || text.includes("caprasik") || text.includes("ortodonti")) {
-        reply = "Dişlerdeki çapraşıklıklar ve dizilim sorunları için **Ortodonti** (Diş Teli ve Şeffaf Plak) bölümümüz hizmet vermektedir. Hekimimiz size en uygun tedavi yöntemini (telsiz şeffaf plaklar veya geleneksel braketler) sunacaktır. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else if (text.includes("diş eti") || text.includes("dis eti") || text.includes("kanama") || text.includes("şişlik") || text.includes("sislik") || text.includes("koku")) {
-        reply = "Diş eti kanaması, şişlik veya ağız kokusu genellikle diş eti hastalıklarının (Periodontitis/Gingivitis) belirtisidir. Diş taşı temizliği ve diş eti tedavileri için **Periodontoloji** birimimizden randevu almanızı öneririz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else if (text.includes("çekim") || text.includes("cekim") || text.includes("yirmilik") || text.includes("gömülü") || text.includes("gomulu") || text.includes("cerrahi")) {
-        reply = "Yirmilik diş ağrıları, gömülü diş operasyonları ve implant cerrahisi **Ağız, Diş ve Çene Cerrahisi** bölümümüzün uzmanlık alanıdır. Cerrahi muayene için randevunuzu online oluşturabilirsiniz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else if (text.includes("implant") || text.includes("zirkonyum") || text.includes("protez") || text.includes("kaplama") || text.includes("lamina")) {
-        reply = "Eksik dişlerin tamamlanması, zirkonyum kaplamalar, porselen laminalar ve gülüş tasarımı uygulamaları **Protetik Diş Tedavisi** uzmanlarımızın alanıdır. Size en estetik çözümleri sunmak için hazırız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else if (text.includes("çocuk") || text.includes("cocuk") || text.includes("bebek") || text.includes("pedodonti")) {
-        reply = "Çocuklarımızın süt dişi tedavileri, koruyucu dolgular (fissür örtücü) ve diş gelişim takipleri **Pedodonti (Çocuk Diş Hekimliği)** bölümümüz tarafından sevgiyle gerçekleştirilmektedir. [Hemen online randevu oluşturabilirsiniz](/randevu)";
-      } else {
-        reply = "Merhaba! Ben GingivaX Akıllı Klinik Asistanı Dr. Perio. Şikayetinizi (örneğin ağrı, diş eti kanaması, diş teli, implant vb.) yazabilirseniz size en uygun tedavi birimimizi önerebilirim. Dilerseniz [buraya tıklayarak online randevunuzu](/randevu) hemen oluşturabilirsiniz.";
-      }
-
-      return NextResponse.json({ reply });
+      return NextResponse.json({ reply: getStaticReply(message, !!image) });
     }
 
     let userParts: any[] = [];
@@ -56,7 +95,7 @@ export async function POST(req: Request) {
            mimeType: mimeType
          }
        });
-    }
+     }
 
     if (message && message.trim() !== '') {
       userParts.push({ text: message });
@@ -66,22 +105,15 @@ export async function POST(req: Request) {
       userParts.push({ text: 'Bu fotoğrafta ağız ve diş sağlığımla ilgili herhangi bir sorun görebiliyor musunuz? Hangi bölüme gitmeliyim?' });
     }
 
-    const response = await ai.models.generateContent({
-       model: 'gemini-2.5-flash',
-       contents: [
-         {
-           role: 'user',
-           parts: userParts
-         }
-       ],
-       config: {
-         systemInstruction: SYSTEM_INSTRUCTION
-       }
-    });
-    
-    return NextResponse.json({ reply: response.text });
+    try {
+      const replyText = await generateWithRetry(ai, userParts);
+      return NextResponse.json({ reply: replyText });
+    } catch (apiError) {
+      console.error('Gemini API hatası, statik mesaja yönlendiriliyor:', apiError);
+      return NextResponse.json({ reply: getStaticReply(message, !!image) });
+    }
   } catch (error) {
-    console.error('Gemini API Error:', error);
-    return NextResponse.json({ reply: 'Üzgünüm, analiz sırasında bir ağ hatası oluştu. Lütfen fotoğraf boyutunu veya bağlantınızı kontrol edip tekrar deneyin.' }, { status: 500 });
+    console.error('Genel sunucer hatası:', error);
+    return NextResponse.json({ reply: 'Üzgünüm, şu anda asistan servisinde teknik bir sorun yaşanıyor. Lütfen daha sonra tekrar deneyin.' }, { status: 500 });
   }
 }

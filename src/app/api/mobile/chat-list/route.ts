@@ -33,7 +33,15 @@ export async function GET(req: Request) {
       select: { id: true, name: true, image: true, role: true, specialty: true },
     });
 
-    return NextResponse.json({ success: true, users });
+    // Count total unread messages (sent to this user by any partner)
+    const totalUnread = await prisma.message.count({
+      where: {
+        receiverId: userId,
+        isRead: false,
+      },
+    });
+
+    return NextResponse.json({ success: true, users, totalUnread });
   } catch (error) {
     console.error("MOBILE_CHAT_LIST_ERROR", error);
     return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
