@@ -41,12 +41,7 @@ export async function POST(req: Request) {
       to: email,
       subject: "Doğrulama Kodunuz - GingivaX",
       body: `Hoş geldiniz ${name}! Kaydınızı tamamlamak için aşağıdaki 6 haneli doğrulama kodunu uygulamaya girin:`,
-      details: {
-        date: "Hemen",
-        time: "Doğrulama Kodu",
-        service: verificationToken.token, // Putting code in a details card for visibility
-        doctor: "GingivaX Güvenlik"
-      }
+      code: verificationToken.token,
     });
 
     // Special verification section in notifications.ts would be better but for now I'll use the body

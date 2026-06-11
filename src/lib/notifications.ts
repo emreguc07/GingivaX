@@ -1,13 +1,23 @@
 // src/lib/notifications.ts
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { logActivity } from "./activity";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+const transporter = (process.env.SMTP_USER && process.env.SMTP_PASS) ? nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  }
+}) : null;
 
 interface EmailConfig {
   to: string;
   subject: string;
   body: string;
+  code?: string;
   details?: {
     date: string;
     time: string;
@@ -18,8 +28,15 @@ interface EmailConfig {
   actionText?: string;
 }
 
-export async function sendEmail({ to, subject, body, details, actionUrl, actionText }: EmailConfig) {
+export async function sendEmail({ to, subject, body, code, details, actionUrl, actionText }: EmailConfig) {
   try {
+    const codeHtml = code ? `
+      <div style="text-align: center; margin: 25px 0; padding: 20px; background: #f0fdfa; border: 2px dashed #00CED1; border-radius: 12px;">
+        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Doğrulama Kodunuz</span>
+        <span style="font-size: 32px; font-weight: 800; color: #00CED1; letter-spacing: 5px; font-family: monospace;">${code}</span>
+      </div>
+    ` : '';
+
     const detailsHtml = details ? `
       <div style="margin-top: 20px; padding: 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;">
         <h4 style="margin: 0 0 10px 0; color: #00CED1;">Randevu Detayları:</h4>
@@ -36,43 +53,56 @@ export async function sendEmail({ to, subject, body, details, actionUrl, actionT
       </div>
     ` : '';
 
-    if (resend) {
+    const htmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; padding: 20px; border: 1px solid #eee; border-radius: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #00CED1; margin: 0;">GingivaX</h1>
+          <p style="color: #666; font-style: italic;">Gülüşünüz Emanetimizdir</p>
+        </div>
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 16px;">
+          <h2 style="margin-top: 0; font-size: 20px;">${subject}</h2>
+          <p style="line-height: 1.6; font-size: 16px;">${body}</p>
+          ${codeHtml}
+          ${detailsHtml}
+          ${actionHtml}
+        </div>
+        <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #999;">
+          <p>&copy; 2026 GingivaX Klinik Yönetim Sistemi. Tüm hakları saklıdır.</p>
+          <p>Cumhuriyet Cad. No:123, İstanbul</p>
+        </div>
+      </div>
+    `;
+
+    if (transporter) {
+      await transporter.sendMail({
+        from: `"GingivaX Klinik" <${process.env.SMTP_USER}>`,
+        to: to,
+        subject: subject,
+        html: htmlContent,
+      });
+      await logActivity("NOTIFICATION_SENT", `${to} adresine bildirim gönderildi (${subject}).`);
+      return { success: true };
+    } else if (resend) {
       await resend.emails.send({
         from: 'GingivaX Klinik <on-boarding@resend.dev>',
         to: to,
         subject: subject,
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; padding: 20px; border: 1px solid #eee; border-radius: 20px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <h1 style="color: #00CED1; margin: 0;">GingivaX</h1>
-              <p style="color: #666; font-style: italic;">Gülüşünüz Emanetimizdir</p>
-            </div>
-            <div style="background: #f9f9f9; padding: 30px; border-radius: 16px;">
-              <h2 style="margin-top: 0; font-size: 20px;">${subject}</h2>
-              <p style="line-height: 1.6; font-size: 16px;">${body}</p>
-              ${detailsHtml}
-              ${actionHtml}
-            </div>
-            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #999;">
-              <p>&copy; 2026 GingivaX Klinik Yönetim Sistemi. Tüm hakları saklıdır.</p>
-              <p>Cumhuriyet Cad. No:123, İstanbul</p>
-            </div>
-          </div>
-        `,
+        html: htmlContent,
       });
+      await logActivity("NOTIFICATION_SENT", `${to} adresine bildirim gönderildi (${subject}).`);
+      return { success: true };
     } else {
       // Fallback for development: just log
       console.log(`
-        --- [RESEND KEY MISSING] MOCK EMAIL ---
+        --- [EMAIL CONFIG MISSING] MOCK EMAIL ---
         To: ${to}
         Subject: ${subject}
         Body: ${body}
-        --------------------------------------
+        -----------------------------------------
       `);
+      await logActivity("NOTIFICATION_FALLBACK", `${to} adresine e-posta gönderilemedi (Konfigürasyon eksik).`);
+      return { success: true, fallback: true };
     }
-
-    await logActivity("NOTIFICATION_SENT", `${to} adresine bildirim gönderildi (${subject}).`);
-    return { success: true };
   } catch (error) {
     console.error("EMAIL_ERROR", error);
     return { success: false, error };

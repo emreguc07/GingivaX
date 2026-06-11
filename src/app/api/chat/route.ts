@@ -20,15 +20,31 @@ Cevaplarını kısa ve anlaşılır tut. Markdown formatını (kalın yazı, mad
 
 export async function POST(req: Request) {
   try {
-    if (!ai) {
-      return NextResponse.json(
-        { reply: 'Dr. Perio şu anda uykuda. (Sistem hatası: API anahtarı eksik. Lütfen .env dosyasına GEMINI_API_KEY ekleyin.)' }, 
-        { status: 200 } // Don't throw 500 so UI can display it
-      );
-    }
-
     const body = await req.json();
     const { message, image, mimeType } = body;
+
+    if (!ai) {
+      const text = (message || "").toLowerCase();
+      let reply = "";
+      
+      if (text.includes("ağrı") || text.includes("agri") || text.includes("sızı") || text.includes("sizi") || text.includes("zonkla")) {
+        reply = "Geçmiş olsun! Diş ağrısı genellikle çürük, kanal tedavisi gereksinimi veya diş eti enfeksiyonu kaynaklı olabilir. En kısa sürede **Endodonti (Kanal Tedavisi)** veya **Restoratif Diş Tedavisi** uzmanımıza muayene olmanızı öneririm. Şiddetli ağrılarda hekim muayenesi olmadan antibiyotik kullanmayınız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else if (text.includes("tel") || text.includes("şeffaf") || text.includes("seffaf") || text.includes("yamuk") || text.includes("çapraşık") || text.includes("caprasik") || text.includes("ortodonti")) {
+        reply = "Dişlerdeki çapraşıklıklar ve dizilim sorunları için **Ortodonti** (Diş Teli ve Şeffaf Plak) bölümümüz hizmet vermektedir. Hekimimiz size en uygun tedavi yöntemini (telsiz şeffaf plaklar veya geleneksel braketler) sunacaktır. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else if (text.includes("diş eti") || text.includes("dis eti") || text.includes("kanama") || text.includes("şişlik") || text.includes("sislik") || text.includes("koku")) {
+        reply = "Diş eti kanaması, şişlik veya ağız kokusu genellikle diş eti hastalıklarının (Periodontitis/Gingivitis) belirtisidir. Diş taşı temizliği ve diş eti tedavileri için **Periodontoloji** birimimizden randevu almanızı öneririz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else if (text.includes("çekim") || text.includes("cekim") || text.includes("yirmilik") || text.includes("gömülü") || text.includes("gomulu") || text.includes("cerrahi")) {
+        reply = "Yirmilik diş ağrıları, gömülü diş operasyonları ve implant cerrahisi **Ağız, Diş ve Çene Cerrahisi** bölümümüzün uzmanlık alanıdır. Cerrahi muayene için randevunuzu online oluşturabilirsiniz. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else if (text.includes("implant") || text.includes("zirkonyum") || text.includes("protez") || text.includes("kaplama") || text.includes("lamina")) {
+        reply = "Eksik dişlerin tamamlanması, zirkonyum kaplamalar, porselen laminalar ve gülüş tasarımı uygulamaları **Protetik Diş Tedavisi** uzmanlarımızın alanıdır. Size en estetik çözümleri sunmak için hazırız. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else if (text.includes("çocuk") || text.includes("cocuk") || text.includes("bebek") || text.includes("pedodonti")) {
+        reply = "Çocuklarımızın süt dişi tedavileri, koruyucu dolgular (fissür örtücü) ve diş gelişim takipleri **Pedodonti (Çocuk Diş Hekimliği)** bölümümüz tarafından sevgiyle gerçekleştirilmektedir. [Hemen online randevu oluşturabilirsiniz](/randevu)";
+      } else {
+        reply = "Merhaba! Ben GingivaX Akıllı Klinik Asistanı Dr. Perio. Şikayetinizi (örneğin ağrı, diş eti kanaması, diş teli, implant vb.) yazabilirseniz size en uygun tedavi birimimizi önerebilirim. Dilerseniz [buraya tıklayarak online randevunuzu](/randevu) hemen oluşturabilirsiniz.";
+      }
+
+      return NextResponse.json({ reply });
+    }
 
     let userParts: any[] = [];
 

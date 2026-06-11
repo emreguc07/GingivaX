@@ -56,12 +56,7 @@ export async function resendVerificationCode(email: string) {
       to: email,
       subject: "Yeni Doğrulama Kodunuz - GingivaX",
       body: "Yeni doğrulama kodunuz aşağıdadır:",
-      details: {
-        date: "Hemen",
-        time: "Doğrulama Kodu",
-        service: token.token,
-        doctor: "GingivaX Güvenlik"
-      }
+      code: token.token,
     });
 
     return { success: "Yeni kod e-postanıza gönderildi." };
