@@ -46,8 +46,8 @@ export async function GET(req: Request) {
           review: true
         },
         orderBy: [
-          { date: "asc" },
-          { time: "asc" }
+          { date: "desc" },
+          { time: "desc" }
         ]
       });
     } else {
